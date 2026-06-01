@@ -1,0 +1,993 @@
+<!DOCTYPE html> <html lang="ru"> <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1" /> <meta name="format-detection" content="telephone=no"> <meta http-equiv="x-ua-compatible" content="ie=edge"> <meta name="theme-color" content="#ffffff"> <title>ИП Карс Анастасия Геннадьевна, Москва (ИНН 772878842295), ИП Карс А Г с ОГРНИП 318774600195535</title> <meta name="description" content="ИП Карс Анастасия Геннадьевна (ИНН 772878842295) Москва - реквизиты, адрес, телефон, виды деятельности, а также другие данные на Rusprofile.ru." /> <meta name="keywords" content="ИП, Карс Анастасия Геннадьевна, Карс А. Г., Москва, ОГРНИП 318774600195535, ИНН 772878842295, ип, индивидуальный предприниматель, информация, реквизиты, адрес, виды деятельности" /> <meta property="og:title" content="ИП Карс А.Г., Москва" /> <meta property="og:url" content="https://www.rusprofile.ru/ip/318774600195535" /> <meta property="og:description" content="Ключевые сведения о ИП Карс А.Г. из официальных источников." /> <meta property="og:image" content="https://www.rusprofile.ru/images/open-graph-200.png" /> <link rel="canonical" href="https://www.rusprofile.ru/ip/318774600195535" /> <link rel="icon" href="/favicon.ico"> <link rel="icon" href="/images/favicon.png" type="image/png"> <link rel="apple-touch-icon" href="/images/apple-touch-icon-180.png"> <link rel="manifest" href="/manifest.json" crossorigin="use-credentials"> <link type="text/css" rel="preload" href="/assets/ip.BD5m6i_m.css" as="style" /><link type="text/css" rel="stylesheet" href="/assets/ip.BD5m6i_m.css" preload /> <link type="text/css" rel="preload" href="/assets/legacy_main.Rzpz16VQ.css" as="style" /><link type="text/css" rel="stylesheet" href="/assets/legacy_main.Rzpz16VQ.css" async /> <link type="text/css" rel="preload" href="/assets/main.Cxlmd6UD.css" as="style" /><link type="text/css" rel="stylesheet" href="/assets/main.Cxlmd6UD.css" preload /> <link rel="preload" as="font" type="font/woff2" href="/assets/rubik-v12-latin_cyrillic-regular.woff2" crossorigin/> <script type="text/javascript">
+        window.RPF = {
+            provide: {
+                app: {
+                    iconsVer: '8985ff9127bc6030aa2c6cb484d62f09'
+                }
+            },
+            store: {
+                user : {"id":null},
+            }
+        };
+        window.RPF.store.user['hasAccess'] = false;
+
+        RPF.search_quick_results = {"randomClaimed":[{"id":"11598322","ref_id":"1187746896996","name":"\u041e\u041e\u041e \"\u0412\u0430\u043a\u0442\u0430\u0439\u043c\"","link":"\/id\/11598322","type":"UL"},{"id":"3047150","ref_id":"1097746678490","name":"\u041e\u041e\u041e \"\u0412\u0435\u043a\u0442\u043e\u0440\"","link":"\/id\/3047150","type":"UL"},{"id":"1247700840342","ref_id":"1247700840342","name":"\u041e\u041e\u041e \"\u0413\u043e\u0440\u0438\u0437\u043e\u043d\u0442\u044b\"","link":"\/id\/1247700840342","type":"UL"},{"id":"1207700059962","ref_id":"1207700059962","name":"\u041e\u041e\u041e \"\u0421\u0442\u0430\u0440\u043a\u0430\u0432 \u041a\u0430\u043f\u0438\u0442\u0430\u043b \u0413\u0440\u0443\u043f\u043f\"","link":"\/id\/1207700059962","type":"UL"},{"id":"1235000088619","ref_id":"1235000088619","name":"\u041e\u041e\u041e \"\u041f\u041a\u0424 \u0417\u0443\u0431\u0438\u043a\u0441\"","link":"\/id\/1235000088619","type":"UL"},{"id":"6754780","ref_id":"1127747201493","name":"\u041e\u041e\u041e \"\u0412\u0438\u0441\u0442\u0430\"","link":"\/id\/6754780","type":"UL"}]};
+
+        window.parseAdSourceCodeQueye = [];
+        window.parseAdSourceCode = function (data,point){
+            window.parseAdSourceCodeQueye.push({data: data, point: point})
+        }
+
+                RPF.growthbook_features = {"rpf-7821":{"defaultValue":false,"rules":[{"force":true,"coverage":0.05,"hashAttribute":"userId"}]},"rpf-9982":{"defaultValue":false,"rules":[{"condition":{"userId":"426275"},"force":true},{"condition":{"userId":"100408"},"force":true},{"condition":{"userId":"594436"},"force":true},{"condition":{"userId":"426275"},"force":true},{"condition":{"activePro":true},"force":true,"coverage":1,"hashAttribute":"userId"}]},"rpf-10489":{"defaultValue":false,"rules":[{"condition":{"activePro":true},"force":true}]},"rpf-10819":{"defaultValue":false,"rules":[{"force":true,"coverage":1,"hashAttribute":"userId"}]},"rpf-10838":{"defaultValue":false,"rules":[{"force":true,"coverage":1,"hashAttribute":"userId"}]},"rpf-10839":{"defaultValue":false,"rules":[{"force":true,"coverage":1,"hashAttribute":"userId"}]},"rpf-11136":{"defaultValue":"user-disabled","rules":[{"condition":{"activePro":false},"coverage":1,"hashAttribute":"growthbookId","seed":"dd2f1c11-7d83-417b-8723-06b0f5e7051e","hashVersion":2,"force":"D"}]},"rpf-11279":{"defaultValue":"user-disabled","rules":[{"condition":{"activePro":true,"manualExperiments":{"$elemMatch":{"$eq":"rpf11279"}}},"coverage":1,"hashAttribute":"userId","seed":"4503b967-6b1e-48d7-9a97-156d4bd6aed8","hashVersion":2,"force":"B"}]},"rpf-11003":{"defaultValue":"user-disabled","rules":[{"condition":{"activePro":false},"coverage":1,"hashAttribute":"growthbookId","seed":"rpf-11003","hashVersion":2,"force":"B"}]},"rpf-11414":{"defaultValue":"user-disabled","rules":[{"condition":{"userId":"271699"},"force":"B"},{"condition":{"userId":"1009885"},"force":"B"},{"condition":{"userId":"998438"},"force":"B"},{"condition":{"growthbookId":"4832232741982922219"},"force":"B"},{"coverage":1,"hashAttribute":"growthbookId","seed":"rpf-11414","hashVersion":2,"force":"B"}]},"rpf-11555":{"defaultValue":"user-disabled","rules":[{"condition":{"growthbookId":"8917959579836569194"},"force":"B"},{"condition":{"activePro":false},"coverage":1,"hashAttribute":"growthbookId","seed":"rpf-11555","hashVersion":2,"force":"C"}]},"rpf-11290":{"defaultValue":"user-disabled","rules":[{"condition":{"userId":"1133021"},"force":"B"},{"condition":{"userId":"1130640"},"force":"B"},{"condition":{"growthbookId":"8476989092710810702"},"force":"B"},{"condition":{"growthbookId":"8917959579836569194"},"force":"B"},{"condition":{"growthbookId":"7832611361396961914"},"force":"B"},{"condition":{"growthbookId":"5628761013461450252"},"force":"B"},{"condition":{"growthbookId":"9216341661743414258"},"force":"B"},{"coverage":1,"hashAttribute":"growthbookId","seed":"8458e651-7810-4f24-90af-a824661fec8f","hashVersion":2,"force":"B"}]},"rpf-11524":{"defaultValue":"user-disabled","rules":[{"condition":{"growthbookId":"8917959579836569194"},"force":"B"},{"coverage":1,"hashAttribute":"growthbookId","seed":"rpf-11524","hashVersion":2,"variations":["A","B"],"weights":[0.5,0.5],"key":"rpf-11524","meta":[{"key":"0"},{"key":"1"}],"phase":"0"},{"condition":{"growthbookId":"8476989092710810702"},"force":"B"}]},"rpf-12061":{"defaultValue":"user-disabled","rules":[{"condition":{"growthbookId":"5642924736392786867"},"force":"B"},{"condition":{"growthbookId":"8476989092710810702"},"force":"B"}]}};
+        RPF.growthbook_attributes = {"growthbookId":"6280389630331355782","uri":"\/ip\/318774600195535","userAgentDevice":"desktop","activeNow":null,"activeLast":null,"viewSubscribeSession":false,"viewCheckoutSession":false,"activePro":false,"activeProPlus":false,"activeFreemium":false,"activeTrial":false,"neverBuy":true,"neverProBuy":true,"hasAnyPro":false,"viewSubscribe":false,"viewCheckout":false,"pro_period":null,"pro_tarif":null,"activeTariffGroup":null,"activeClaiming":false,"activeSearch":false,"activeSubscribe":false,"countPayPro":0,"datePayPro":null,"daysRemain":null,"userId":null,"owner_id":null,"email":null,"registrationDate":null,"bookmarks_count":"","bookmarks":false,"companyType":null,"pageSection":"","pageName":"dashboard","pageVariant":null,"phoneReceived":null,"firstDatePayPro":null,"isTouchDevice":null,"screenWidth":null,"manualExperiments":null};
+        
+                RPF.can_see_freemium_card = false;
+        RPF.is_freemium_expired = false; // был, но кончился
+        RPF.is_freemium_active = false; // есть, активен
+        RPF.subscription_rest_days = 0; // остаток дней
+        RPF.can_activate_freemium = false; // доступен, юзер может активировать
+        
+            </script> <script type="module" src="/assets/app_pre.6oRvbT3s.js" ></script> <!--<![endif]--> <meta name="subscribed" content="false"> </head> <body class="dashboard-page" > <div id="main_info" class="overhidden" data-ts="0" data-sitekey="6LcAn-ErAAAAAKQewKyduyezl4YVE4wkP5uc1cyv" data-invisible-sitekey="6LcIn-ErAAAAADDx6WiiZyHWzCHkVjbJXC-DOUyN" data-user="false" data-dynamic_mod_disabled="0" data-dynamic_mod_disabled_text="" data-metrika="" data-registered_now="0" data-skip_personal_info="0" data-pi_skip_steps="" data-shared_uid=""></div> <script>
+    // Инициализация глобальных переменных
+    (function() {
+        window.dataLayer = window.dataLayer || [];
+        // https://getsitecontrol.com/help/javascript-api/
+        window.gsc = window.gsc || function() {
+            (gsc.q = gsc.q || []).push(arguments)
+        };
+        // инициализация window.AID
+        const host = window.location.hostname;
+        if (host.includes('beta')) {
+            window.AID = 'beta';
+        } else if (host.includes('test')) {
+            window.AID = 'test';
+        } else {
+            window.AID = 'prod';
+        }
+    }());
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const isDomLoaded = true;
+
+        const snowplowDelayedEvents = [];
+
+        // объект для наших функций.
+        const RPTM = { dataLayerVariables: {} };
+        // Дебаг-логирование на тестовых сайтах.
+        const isTestSite = window.location.hostname.indexOf('test') !== -1
+            || window.location.hostname.indexOf('beta') !== -1;
+        RPTM.debug = function() {
+            if (isTestSite) {
+                console.debug('[RPTM DEBUG]', ...arguments);
+            }
+        }
+
+        function snowplowWhenReady() {
+            // Проверяем, что snowplow инициализирован
+            const args = Array.from(arguments);
+            if (typeof window.snowplow === 'function') {
+                window.snowplow(...args);
+                RPTM.debug('snowplow args:', ...args);
+                return;
+            }
+            RPTM.debug('snowplow not ready yet, delaying call with args:', ...args);
+            // Сохраняем событие для отправки после инициализации snowplow
+            snowplowDelayedEvents.push(args);
+        }
+        function snowplowDispatchDelayedEvents() {
+            if (snowplowDelayedEvents.length > 0) {
+                if (typeof window.snowplow !== 'function') {
+                    console.error("can't send delayed snowplow events as window.snowplow is not a function:", window.snowplow);
+                    return;
+                }
+                RPTM.debug(`sending ${snowplowDelayedEvents.length} delayed snowplow events`);
+                const delayedEvents = Array.from(snowplowDelayedEvents);
+                snowplowDelayedEvents.splice(0, snowplowDelayedEvents.length);
+                for (const args of delayedEvents) {
+                    try {
+                        window.snowplow(...args);
+                        RPTM.debug('snowplow delayed args:', ...args);
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
+            }
+        }
+
+        // так ждём GB.pushAttrs(GB.GB_attributes);
+        function waitGbPush(callback) {
+            function isGbDataLayerItem(item) {
+                // проверка наличия данных, которые GB.pushAttrs(GB.GB_attributes) всегда запихивает в dataLayer
+                return item && typeof item === 'object'
+                    && (Object.hasOwn(item, 'viewSubscribeSession')
+                        || Object.hasOwn(item, 'viewCheckoutSession'))
+            }
+
+            // Проверяем существующие элементы
+            for (const item of dataLayer) {
+                if (isGbDataLayerItem(item)) {
+                    callback();
+                    return;
+                }
+            }
+
+            // Сохраняем оригинальный push
+            const originalDataLayerPush = window.dataLayer.push;
+
+            // Перезаписываем push для отслеживания новых элементов
+            window.dataLayer.push = function() {
+                let isGb = false;
+                for (const item of arguments) {
+                    if (isGbDataLayerItem(item)) {
+                        isGb = true;
+                        break;
+                    }
+                }
+
+                // Вызываем оригинальный push
+                originalDataLayerPush.apply(window.dataLayer, arguments);
+
+                if (isGb) {
+                    // Восстанавливаем оригинальный push
+                    window.dataLayer.push = originalDataLayerPush;
+                    callback();
+                }
+            }
+        }
+
+        waitGbPush(() => {
+            const delayedEvents = [];
+            let isInitialized = false;
+
+            // Инициализация, которая срабатывает сразу - объявляются функции,
+            // с помощью которых потом формируются "теги" и т.п.
+            (function() {
+                // чтобы не конфликтовало ни с чем JS CustomEvent будем префиксить
+                const calcJsCustomEventName = (eventName) => `RPTM_${eventName}`;
+
+                RPTM.addCustomEventListener = function(eventName, callback) {
+                    window.addEventListener(calcJsCustomEventName(eventName), callback);
+                }
+
+                RPTM.removeCustomEventListener = function(eventName, callback) {
+                    window.removeEventListener(calcJsCustomEventName(eventName), callback);
+                }
+
+                // Обработка нового элемента dataLayer.
+                RPTM.dataLayerItemHandlers = [
+                    function(item) {
+                        RPTM.debug('handling dataLayer item:', item);
+                        if (typeof item !== 'object') {
+                            return;
+                        }
+                        for (const [key, value] of Object.entries(item)) {
+                            RPTM.dataLayerVariables[key] = value;
+                        }
+                        if (item.event) {
+                            const detail = {dataLayerItem: item, isDelayed: !isInitialized};
+                            const customEvent = new CustomEvent(calcJsCustomEventName(item.event), {detail: detail});
+                            if (isInitialized) {
+                                window.dispatchEvent(customEvent);
+                            } else {
+                                delayedEvents.push(customEvent);
+                            }
+                        }
+                    }
+                ];
+
+                function handleNewDataLayerItem(item) {
+                    for (const handler of RPTM.dataLayerItemHandlers) {
+                        try {
+                            handler(item);
+                        } catch (err) {
+                            console.error('Error in dataLayer handler:', err);
+                        }
+                    }
+                }
+
+                // "Подписка" на новые элементы dataLayer (добавленные через метод dataLayer.push).
+                window.dataLayer.map(handleNewDataLayerItem);
+
+                // Сохраняем оригинальный push
+                const originalDataLayerPush = window.dataLayer.push;
+
+                window.dataLayer.push = function() {
+                    for (const item of arguments) {
+                        handleNewDataLayerItem(item);
+                    }
+                    originalDataLayerPush.apply(window.dataLayer, arguments);
+                }
+
+                // Выполнение функции после DOMContentLoaded
+                RPTM.onDomContentLoaded = function(callback) {
+                    if (isDomLoaded || document.readyState !== 'loading') {
+                        callback();
+                        return;
+                    }
+                    const event = 'readystatechange';
+
+                    function listener() {
+                        if (document.readyState !== 'loading') {
+                            document.removeEventListener(event, listener);
+                            callback();
+                        }
+                    }
+
+                    document.addEventListener(event, listener);
+                }
+
+                // Вставляет внешний скрипт (src=...).
+                RPTM.appendScriptWithSrc = function(src, isAsync = true) {
+                    const load = () => {
+                        const script = document.createElement('script');
+                        script.async = isAsync;
+                        script.src = src;
+                        (document.body || document.head).appendChild(script);
+                        RPTM.debug(`inserted script src='${src}' (async=${script.async})`);
+                    };
+
+                    if (document.readyState === 'complete') {
+                        load();
+                    } else {
+                        window.addEventListener('load', load, { once: true });
+                    }
+                };
+
+                // Выполняет один раз при срабатывании события
+                RPTM.execOnCustomEvent = function(eventName, callback, additionalEventCheck) {
+                    RPTM.addCustomEventListener(eventName, (event) => {
+                        if (typeof additionalEventCheck === 'function' && !additionalEventCheck(event)) {
+                            return;
+                        }
+                        callback(event);
+                    });
+                }
+                RPTM.execOnceOnCustomEvent = function(eventName, callback, additionalEventCheck) {
+                    const _callback = (event) => {
+                        if (typeof additionalEventCheck === 'function' && !additionalEventCheck(event)) {
+                            return;
+                        }
+                        callback(event);
+                        RPTM.removeCustomEventListener(event, _callback);
+                    };
+                    RPTM.addCustomEventListener(eventName, _callback);
+                }
+
+                RPTM.getCookie = function(cookieName) {
+                    const cookieData = document.cookie.split('; ').find(row => row.startsWith(`${cookieName}=`));
+                    return cookieData ? cookieData.split('=')[1] : null;
+                }
+
+                // Переменные
+                const cookieVariableCookieName = {
+                    'growthbookId': '_gb_id',
+                };
+                const variablesAliases = {
+                    'experimentId_rpf8795': 'abInfo.experimentId',
+                    'experimentStart': 'abInfo.experimentStart',
+                    'eventName': 'event',
+                    'snowplowId': 'snowplowDomainUserId'
+                }
+                RPTM.getVariable = function(variableName, event) {
+                    const eventDetail = event && typeof event === 'object' && event.detail
+                    && typeof event.detail === 'object' ? event.detail : {};
+
+                    function getVal(key) {
+                        if (eventDetail.isDelayed
+                            && eventDetail.dataLayerItem
+                            && typeof eventDetail.dataLayerItem === 'object'
+                            && Object.hasOwn(eventDetail.dataLayerItem, key)) {
+                            return eventDetail.dataLayerItem[key];
+                        } else {
+                            return RPTM.dataLayerVariables[key];
+                        }
+                    }
+
+                    const cookieName = cookieVariableCookieName[variableName];
+                    if (typeof cookieName === 'string') {
+                        return RPTM.getCookie(cookieName); // Исправлено: используем cookieName вместо variableName
+                    }
+                    if (Object.hasOwn(variablesAliases, variableName)) {
+                        variableName = variablesAliases[variableName];
+                    }
+                    // e.g. variableName = 'abInfo.experimentStart'
+                    if (variableName.includes('.')) {
+                        const keys = variableName.split('.');
+                        let obj = getVal(keys[0]);
+                        keys.shift();
+                        for (const key of keys) {
+                            if (typeof obj !== 'object' || !Object.hasOwn(obj, key)) {
+                                return undefined;
+                            }
+                            obj = obj[key];
+                        }
+                        return obj;
+                    }
+                    // e.g. variableName = 'isInteraction'
+                    return getVal(variableName);
+                }
+            }());
+
+            // Наши "теги".
+
+            // Snowplow - PageView (инициализация Snowplow)
+            (function() {
+                const snowplowPageViewCallback = (event) => {
+                    // Инициализация основного кода
+                    ;(function(p, l, o, w, i, n, g) {
+                        if (!p[i]) {
+                            p.GlobalSnowplowNamespace = p.GlobalSnowplowNamespace || [];
+                            p.GlobalSnowplowNamespace.push(i);
+                            p[i] = function() {
+                                (p[i].q = p[i].q || []).push(arguments)
+                            };
+                            p[i].q = p[i].q || [];
+                            n = l.createElement(o);
+                            g = l.getElementsByTagName(o)[0];
+                            n.async = 1;
+                            n.src = w;
+                            g.parentNode.insertBefore(n, g)
+                        }
+                    }(window, document, 'script', 'https://unpkg.com/@snowplow/javascript-tracker@3.8.0/dist/sp.js', 'snowplow'));
+                    RPTM.debug('snowplow script tag inserted');
+
+                    // Инициализация треккера
+                    const appId = window.AID;
+                    window.snowplow('newTracker', 'sp', 'https://snowplow.stage.rptechnical.ru', {
+                        appId: appId,
+                        minimumVisitLength: 30,
+                        encodeBase64: false,
+                        resetActivityTrackingOnPageView: true,
+                        connectionTimeout: 5000,
+                        anonymousTracking: false,
+                        contexts: {  //подключение модулей и встроенных контекстов
+                            webPage: true,
+                            session: true,
+                            performanceTiming: true,
+                            gaCookies: true,
+                            clientHints: true,
+                            encodeBase64: false,
+                        },
+                    });
+                    RPTM.debug('snowplow newTracker / appId:', appId);
+
+                    // Инициализация глобального (в терминах snowplow) контекста.
+                    //  Глобальный контекст будет отправляться со всеми хитами на странице
+
+                    // ------ Начало -------
+                    // Информация о пользователе
+                    const userContext = {
+                        schema: 'iglu:ru.rusprofile/user_context/jsonschema/1-0-2',
+                        data: {
+                            userEmail: RPTM.getVariable('userEmail', event), // UserId: String - Опционально
+                            yametrikaid: RPTM.getVariable('yametrikaid', event), // yametrikaid: String - Опционально
+                            googleid: RPTM.getVariable('googleid', event), // googleid: String - Опционально
+                            segment: RPTM.getVariable('userSegment', event) || 'notAuth', // segment: String - Опционально
+                            customDimensions: {
+                                'registrationDate': RPTM.getVariable('registrationDate', event),
+                                'activeSubscribe': RPTM.getVariable('activeSubscribe', event),
+                                'activePro': RPTM.getVariable('activePro', event),
+                                'activeSearch': RPTM.getVariable('activeSearch', event),
+                                'activeClaiming': RPTM.getVariable('activeClaiming', event),
+                                'email': RPTM.getVariable('email', event),
+                                'bookmarks': RPTM.getVariable('bookmarks', event),
+                                'bookmarks_count': RPTM.getVariable('bookmarks_count', event)
+                            }, // userCustomDimensions - все String - Опционально, ВАЖНО !!! это - userCustomDimensions !!!
+                            event_customDimensions: {
+                                'pageName': RPTM.getVariable('pageName', event),
+                                'pageVariant': RPTM.getVariable('pageVariant', event),
+                                'companyTypeDashboard': RPTM.getVariable('companyTypeDashboard', event),
+                                'pageName_ch_tr': RPTM.getVariable('pageName_ch_tr', event),
+                                'pageSection': RPTM.getVariable('pageSection', event)
+                            } // eventCustomDimensions - все String - Опционально,  ВАЖНО !!! это - eventCustomDimensions !!!
+                        }
+                    };
+
+                    // Добавление глобального контекста в треккер
+                    // Если вы не используете какой-либо из контекстов  удалите из списка  ниже
+                    const snowplowGlobalContexts = [userContext];
+                    window.snowplow('addGlobalContexts', snowplowGlobalContexts);
+                    RPTM.debug('snowplow addGlobalContexts:', snowplowGlobalContexts);
+
+                    if (window.yaParams && window.yaParams.UserID) {
+                        const snowplowUserId = window.yaParams.UserID;
+                        window.snowplow('setUserId', snowplowUserId); //отправка информации о UserID
+                        RPTM.debug('snowplow setUserId:', snowplowUserId);
+                    }
+
+                    // получаем clientid (snowplowid)
+                    window.snowplow(function() {
+                        const sp = this.sp;
+                        const domainUserInfo = sp.getDomainUserInfo();
+                        // типа send it to Google Tag Manager
+                        window.dataLayer.push({
+                            'event': 'trackerReady',
+                            'snowplowDomainUserId': domainUserInfo[1]
+                        });
+                    });
+
+                    // Отправка хита о просмотре страницы
+                    window.snowplow('trackPageView');
+                    RPTM.debug('snowplow trackPageView');
+
+                    // Отправляем отложенные события, если они есть
+                    snowplowDispatchDelayedEvents();
+                };
+                RPTM.execOnCustomEvent('spa_page_view', snowplowPageViewCallback);
+                RPTM.onDomContentLoaded(snowplowPageViewCallback);
+            }());
+
+            // AB - cookie and dataLayer install
+            // триггер "CallBack AB (rpf-8795)" - это событие "ab" + доп проверка
+            (function() {
+                const callbackAb = () => {
+                    RPTM.debug('callbackAb call start');
+                    const cookies = document.cookie.split(';');
+                    RPTM.debug('All cookies:', cookies);
+
+                    let foundCookies = 0;
+                    for (let i = 0; i < cookies.length; i++) {
+                        const trimmedCookie = cookies[i].trim();
+                        if (trimmedCookie.startsWith('_gb_ab')) {
+                            foundCookies++;
+                            RPTM.debug('Found _gb_ab cookie:', trimmedCookie);
+
+                            const gtmCookieParts = trimmedCookie.split('=');
+                            if (gtmCookieParts.length < 2) {
+                                RPTM.debug('Invalid _gb_ab cookie format:', trimmedCookie);
+                                continue;
+                            }
+
+                            const gtmCookieName = gtmCookieParts[0];
+                            const gtmCookieValue = gtmCookieParts[1];
+
+                            if (!gtmCookieValue || gtmCookieValue.trim() === '') {
+                                RPTM.debug('Empty _gb_ab cookie value for:', gtmCookieName);
+                                continue;
+                            }
+
+                            const gtmCookieExpId = gtmCookieName.slice('_gb_ab_'.length);
+                            if (!gtmCookieExpId) {
+                                RPTM.debug('Empty experiment ID for _gb_ab cookie:', gtmCookieName);
+                                continue;
+                            }
+
+                            window.dataLayer.push({
+                                'event': 'gtmCookieAB',
+                                'isInteraction': false,
+                                'experimentId': gtmCookieExpId,
+                                'experimentVariant': gtmCookieValue
+                            });
+
+                            RPTM.debug('Pushed gtmCookieAB event:', {
+                                experimentId: gtmCookieExpId,
+                                experimentVariant: gtmCookieValue
+                            });
+                        }
+                    }
+                    RPTM.debug('Total _gb_ab cookies found:', foundCookies);
+                };
+
+                function checkExperimentIdRpf8795ContainsRpf8795(event) {
+                    const experimentId_rpf8795 = RPTM.getVariable('experimentId_rpf8795', event);
+                    RPTM.debug('checkExperimentIdRpf8795ContainsRpf8795:', experimentId_rpf8795);
+                    try {
+                        const result = experimentId_rpf8795 && experimentId_rpf8795.includes('rpf-8795');
+                        RPTM.debug('checkExperimentIdRpf8795ContainsRpf8795 result:', result);
+                        return result;
+                    } catch {
+                        RPTM.debug('checkExperimentIdRpf8795ContainsRpf8795 error');
+                        return false;
+                    }
+                }
+
+                // Сначала регистрируем callbackAb
+                RPTM.execOnCustomEvent('ab', callbackAb, checkExperimentIdRpf8795ContainsRpf8795);
+
+                // Выполняем callbackAb при DOMContentLoaded с повторными проверками
+                RPTM.onDomContentLoaded(callbackAb);
+            }());
+
+            // Snowplow - AB (триггер "Event - AB" - событие "gtmCookieAB")
+            // Регистрируем обработчик ПОСЛЕ регистрации callbackAb
+            RPTM.execOnCustomEvent('gtmCookieAB', (event) => {
+                RPTM.debug('gtmCookieAB event received');
+                const eventObject = {
+                    isInteraction: RPTM.getVariable('isInteraction', event),
+                    eventName: RPTM.getVariable('event', event),
+                    experimentId: RPTM.getVariable('experimentId', event),
+                    experimentVariant: RPTM.getVariable('experimentVariant', event),
+                    experimentStart: RPTM.getVariable('experimentStart', event),
+                    growthbookId: RPTM.getVariable('growthbookId', event)
+                }
+
+                snowplowWhenReady('trackSelfDescribingEvent', {
+                    event: {
+                        schema: 'iglu:ru.rusprofile/experiment_data/jsonschema/1-0-2',
+                        data: eventObject
+                    }
+                });
+            });
+
+            // Snowplow - Clicks/Forms
+            // once, т.к. в GTM это - вставка HTML, которая выполняется 1 раз
+            (function() {
+                const snowplowClicksFormsCallback = (event) => {
+                    RPTM.debug('clicks etc event detail:', event ? event.detail : {});
+                    const eventObject = {
+                        'isInteraction': RPTM.getVariable('isInteraction', event),
+                        'eventName': RPTM.getVariable('eventName', event),
+                        'eventCategory': RPTM.getVariable('eventCategory', event),
+                        'eventAction': RPTM.getVariable('eventAction', event),
+                        'eventLabel': RPTM.getVariable('eventLabel', event),
+                        'customDimensions': {
+                            'element': RPTM.getVariable('element', event),
+                            'error_text': RPTM.getVariable('error_text', event),
+                            'abVariant': RPTM.getVariable('abVariant', event),
+                            'qty_users': RPTM.getVariable('qty_users', event),
+                            'payMethod': RPTM.getVariable('payMethod', event),
+                            'pro_period': RPTM.getVariable('pro_period', event),
+                            'survey_responses': RPTM.getVariable('survey_responses', event),
+                            'ogrn': RPTM.getVariable('ogrn', event)
+
+                        }
+                    }
+                    snowplowWhenReady('trackSelfDescribingEvent', {
+                        event: {
+                            schema: 'iglu:ru.rusprofile/event_data/jsonschema/1-0-1',
+                            data: eventObject
+                        }
+                    });
+                };
+                // триггер "Event - Open Form" - это ("form_open" OR "show_popup")
+                for (const event of ['click', 'view', 'form_open','form_submit','form_close', 'show_popup', 'close_popup', 'open_url', 'pv', 'spa_page_view', 'show', 'trigger']) {
+                    RPTM.execOnCustomEvent(event, snowplowClicksFormsCallback);
+                }
+            }());
+
+            // Snowplow - Scroll
+            // ждём загрузку документа, т.к., не зная его высоту, нельзя определить глубину скролла
+            RPTM.onDomContentLoaded(() => {
+                const callback = (scrollDepth) => {
+                    const eventObject = {
+                        'isInteraction': false,
+                        'eventName': 'scroll',
+                        'eventCategory': 'scroll',
+                        'eventAction': scrollDepth.toString(),
+                        'eventLabel': 'null'
+                    }
+                    snowplowWhenReady('trackSelfDescribingEvent', {
+                        event: {
+                            schema: 'iglu:ru.rusprofile/event_data/jsonschema/1-0-1',
+                            data: eventObject
+                        }
+                    });
+                }
+
+                const milestones = new Set([25, 50, 75, 99]);
+                let ticking = false;
+
+                const getScrollBottom = () => {
+                    // simple variant - document.documentElement.scrollTop
+                    // noinspection JSDeprecatedSymbols
+                    const scrollTop = window.pageYOffset
+                        || (document.scrollingElement && document.scrollingElement.scrollTop)
+                        || document.documentElement.scrollTop
+                        || (document.body && document.body.scrollTop)
+                        || 0;
+                    // simple variant - window.innerHeight
+                    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                    return scrollTop + viewportHeight;
+                }
+
+                const getMaxScroll = () => {
+                    // simple variant - document.documentElement.scrollHeight
+                    const d = document.documentElement;
+                    const b = document.body || d;
+                    return Math.max(
+                        b.scrollHeight, d.scrollHeight,
+                        b.offsetHeight, d.offsetHeight,
+                        b.clientHeight, d.clientHeight
+                    );
+                };
+
+                const fire = (currentScrollDepth) => {
+                    for (const scrollDepth of milestones) {
+                        if (currentScrollDepth >= scrollDepth) {
+                            milestones.delete(scrollDepth);
+                            try {
+                                callback(scrollDepth);
+                            } catch (err) {
+                                console.log(err);
+                            }
+                        }
+                    }
+                    if (!milestones.size) {
+                        detach();
+                    }
+                };
+
+                const update = () => {
+                    ticking = false;
+                    const bottom = getScrollBottom();
+                    const max = getMaxScroll();
+                    const pct = !max ? 0 : Math.min(100, Math.max(0, Math.floor((bottom / max) * 100)));
+                    fire(pct);
+                };
+
+                const tick = () => {
+                    if (!ticking) {
+                        ticking = true;
+                        requestAnimationFrame(update);
+                    }
+                };
+
+                let intervalId = null;
+
+                const detach = () => {
+                    ticking = true;
+                    if (intervalId) {
+                        clearInterval(intervalId);
+                    }
+                    window.removeEventListener('scroll', tick);
+                    window.removeEventListener('resize', tick);
+                    window.removeEventListener('load', tick);
+                    window.removeEventListener('pageshow', tick);
+                    if (ro) ro.disconnect();
+                    if (mo) mo.disconnect();
+
+                    RPTM.debug('detached scroll event listeners');
+                };
+
+                // recalculate when layout/size changes
+                window.addEventListener('scroll', tick, { passive: true });
+                window.addEventListener('resize', tick);
+                window.addEventListener('load', tick);
+                window.addEventListener('pageshow', tick);
+
+                // watch for content/height changes
+                const ro = 'ResizeObserver' in window ? new ResizeObserver(tick) : null;
+                if (ro) {
+                    if (document.documentElement) ro.observe(document.documentElement);
+                    if (document.body) ro.observe(document.body);
+                }
+                const mo = 'MutationObserver' in window ? new MutationObserver(tick) : null;
+                if (mo) mo.observe(document.body || document.documentElement, { childList: true, subtree: true });
+
+                if (!ro || !mo) {
+                    intervalId = setInterval(tick, 1000);
+                }
+
+                tick(); // initial
+            });
+
+            // Getsitecontrol
+            RPTM.execOnceOnCustomEvent('trackerReady', (event) => {
+                // далее всё должно быть аналогично интеграции в GTM
+                // https://tagmanager.google.com/?authuser=1#/container/accounts/6075602295/containers/104049192/workspaces/152/tags
+                const gscParamGtmVar = {
+                    snowId: 'snowplowDomainUserId'
+                };
+                const gscParamsNamesMatchingGtmVarsNames = [
+                    'activePro', 'activeClaiming', 'activeSubscribe',
+                    'userSegment', 'bookmarks', 'bookmarks_count', 'countPayPro',
+                    'datePayPro', 'activeLast', 'viewSubscribe', 'viewCheckout',
+                    'viewSubscribeSession', 'viewCheckoutSession', 'pageName'
+                ];
+
+                function updateGscParams(event) {
+                    const gscParams = {
+                        host: window.location.hostname,
+                        // аналогично переменной 'UserID' в GTM
+                        userId: window.yaParams && window.yaParams.UserID,
+                        // аналогично переменной "Page URL" в GTM
+                        pageURL: window.location.href,
+                    };
+                    // аналогично переменной "reg_date_timestamp" в GTM
+                    const registrationDate = RPTM.getVariable('registrationDate', event);
+                    if (registrationDate) {
+                        const date = new Date(registrationDate);
+                        gscParams['registrationDate'] = Math.floor(date.getTime() / 1000);
+                    }
+                    for (const [gscParamName, gtmVarName] of Object.entries(gscParamGtmVar)) {
+                        gscParams[gscParamName] = RPTM.getVariable(gtmVarName, event);
+                    }
+                    for (const name of gscParamsNamesMatchingGtmVarsNames) {
+                        gscParams[name] = RPTM.getVariable(name, event);
+                    }
+
+                    // Добавляем counterpartyId из RPF.id
+                    if (window.RPF && window.RPF.id) {
+                        gscParams['counterpartyId'] = window.RPF.id;
+                    }
+
+                    // https://getsitecontrol.com/help/javascript-api/#targeting
+                    window.gsc('params', gscParams);
+                    RPTM.debug('gsc params:', gscParams);
+                }
+
+                updateGscParams(event);
+
+                const watchedGtmVars = new Set(gscParamsNamesMatchingGtmVarsNames.concat(
+                    Object.values(gscParamGtmVar), ['registrationDate']))
+                RPTM.dataLayerItemHandlers.push(function(item) {
+                    if (typeof item !== 'object') {
+                        return;
+                    }
+                    for (const key of Object.keys(item)) {
+                        if (watchedGtmVars.has(key)) {
+                            updateGscParams(null);
+                        }
+                    }
+                });
+
+                RPTM.appendScriptWithSrc('https://gsc.rusprofile.ru/l4693d4m.js', true);
+            });
+
+            // Clarity Setup (инициализация window.clarity)
+            RPTM.onDomContentLoaded(() => {
+                // аналогично переменной 'UserID' в GTM
+                const UserID = window.yaParams && window.yaParams.UserID;
+                (function(c, l, a, r, i, t, y) {
+                    c[a] = c[a] || function() {
+                        (c[a].q = c[a].q || []).push(arguments)
+                    };
+                    t = l.createElement(r);
+                    t.async = 1;
+                    t.src = "https://www.clarity.ms/tag/" + i;
+                    y = l.getElementsByTagName(r)[0];
+                    y.parentNode.insertBefore(t, y);
+                })(window, document, "clarity", "script", "i8x9s2cqhy");
+                if (UserID) {
+                    const clarityIdentity = "" + UserID;
+                    window.clarity("identify", clarityIdentity);
+                    RPTM.debug('clarity identify:', clarityIdentity);
+                }
+            });
+
+             // Clarity
+            (function() {
+                function shouldTriggerClarityEventClick(event) {
+                    // Проверяем наличие объекта clarity в событии (из конфигурации RpfAnalytics)
+                    const data = RPTM.getVariable('clarity', event);
+
+                    return !window.location.hostname.includes('test')
+                        && data
+                        && data.group
+                        && data.value;
+                };
+
+                function handlerClarityEvent(event) {
+                    const data = RPTM.getVariable('clarity', event);
+
+                    // Пропускаем событие, если данные отсутствуют
+                    if (!data || !data.group || !data.value) return;
+
+                    window.clarity("set", data.group, data.value);
+
+                    if(data.upgrade) {
+                        window.clarity("upgrade", data.value);
+                    }
+
+                    RPTM.debug(`clarity set ${data.group}: ${data.value}`, data.upgrade ? ', upgrade: ${data.value}' : '');
+                }
+
+                for (const eventName of ['click', 'ab', 'show_popup']) {
+                    RPTM.execOnCustomEvent(eventName, handlerClarityEvent, shouldTriggerClarityEventClick);
+                }
+            }());
+
+            // Устанавливаем флаг инициализации и отправляем отложенные события
+            isInitialized = true;
+            for (const customEvent of delayedEvents) {
+                RPTM.debug('dispatching delayed event, detail:', customEvent.detail);
+                window.dispatchEvent(customEvent);
+            }
+        });
+    });
+</script> <div id="wrapper"> <script>
+                RPF.screenlimit1 = 767;
+                RPF.screenlimit2 = 1199;
+            </script> <header class="head dash-pages"> <div class="head__content relative flex container"> <div class="head__left-part"> <div class="btn btn-rounded head__menu-trigger" id="js-menu-trigger" data-track-click="header_menu,open_burger_menu,null"> <div class="burg"></div> </div> <div class="head__logo"><a href="/">Rusprofile.ru - информация о российских юридических лицах и предпринимателях</a></div> <div class="head__menu" id="js-head-menu"> <ul class="links unstyled"> <li><a href="/features" data-track-click="header_menu,features,old">Возможности</a></li> <li><a href="/articles" data-track-click="header_menu,news,old">Новости</a></li> <li class="order-end"><a href="/about" data-track-click="header_menu,about,old">О компании</a></li> <li class="head_extra_links order-top"><a href="/subscribe-plus" data-track-click="header_menu,pro_plus">Проверка физлиц</a></li> <li class="head_extra_links order-top"> <a href="/search-advanced" class="advanced-search-btn-external advanced-search-btn" rel="nofollow" data-goal-param="interactions, search_advanced_ip" data-new="" data-track-click="header_menu, go_list, extended" > Подбор компаний </a>
+</li> <li class="head_extra_links"><a href="/subscribe" data-track-click="header_menu,subscribe,null" class="tariffsPageLink">Тарифы</a></li> </ul> </div> <div id="js-head__search" class="head__search main-search full-main "> <div id="searchform" class="js-livesearch searchForm" data-type="head"> <div class="search-autocomplete__wrp"> <div class="search-autocomplete woPaddingRight head-search-livesearch"> <input id="autocomplete-head-search" name="query" class="search__input" type="text" placeholder="Название, адрес, руководитель, учредитель, ОГРН, ИНН" maxlength="100" autocomplete="off"> <label class="search-autocomplete__ico" for="autocomplete-head-search"> <i class="ico " data-ico="search-new" > <svg width="32" height="32"><use href="#search-new"></use></svg> </i> </label> </div> </div> <label class="search-autocomplete__ico" for="autocomplete-head-search"> <i class="ico " data-ico="search-new" > <svg width="32" height="32"><use href="#search-new"></use></svg> </i> </label> <button type="button" class="head__search-opener mobile btn hidden searchIco"> <i class="ico " data-ico="search-new" > <svg width="32" height="32"><use href="#search-new"></use></svg> </i> </button> </div>
+</div> </div> <div class="head__right"> <ul class="head__right-links unstyled"> <li class="head_extra_links order-top"><a href="/subscribe-plus" data-track-click="header_menu,pro_plus">Проверка физлиц</a></li> <li class="head_extra_links order-top"> <a href="/search-advanced" class="advanced-search-btn-external advanced-search-btn" rel="nofollow" data-goal-param="interactions, search_advanced_ip" data-new="" data-track-click="header_menu, go_list, extended" > Подбор компаний </a>
+</li> <li class="head_extra_links"><a href="/subscribe" data-track-click="header_menu,subscribe,null" class="tariffsPageLink">Тарифы</a></li> </ul> <div class="head__user" id="js-head-user"> <div class="btn btn-rounded" id="menu-personal-trigger"> <i class="ico ico-m " data-ico="user_new" > <svg width="32" height="32"><use href="#user_new"></use></svg> </i> <span class="btn-text"> Войти </span> </div> </div> </div> </div> </header> <div id="main" class="company-main renewed"> <div class="container"> <div class="company-header"> <div class="company-header__head"> <h1 itemprop="name"> ИП Карс Анастасия Геннадьевна </h1> <span class="company-header__icon success" title="Действующий ИП"></span> <div id="bookmark-company-header"> <button type="button" class="company-header__button-follow" data-text="Отслеживать"> <i class="ico " data-ico="bell" > <svg width="32" height="32"><use href="#bell"></use></svg> </i> </button> </div> </div> <div class="company-header__menu flexmenu"> <nav class="company-menu" id="js-flexmenu"> <span class="flexpoint company-menu_home active" title="Карс Анастасия Геннадьевна"> <span>Сводка</span> </span> <a href="/sanctions/318774600195535" data-key-item="sanctions" class="flexpoint gtm_nav_sanctions" title="Санкции Карс Анастасия Геннадьевна" rel="nofollow" data-goal-param="sanctions_flex_ip" > <span>Санкции</span> </a> <a href="/history/318774600195535" data-key-item="history" class="flexpoint gtm_nav_history" title="Исторические сведения" rel="nofollow" data-goal-param="interactions, history_flex_ip" > <span>История</span> </a> <a href="/okved/318774600195535" data-key-item="okved" class="flexpoint gtm_nav_okved" title="Виды деятельности ИП по ОКВЭД" rel="nofollow" data-goal-param="interactions, okved_flex_ip" > <span>Виды деят.</span> </a> <a href="/egrip?ogrnip=318774600195535" data-key-item="egrip" class="flexpoint gtm_nav_egrip" title="Выписка из ЕГРИП" rel="nofollow" data-goal-param="interactions, egr_flex_ip" > <span>Выписка из ЕГРИП</span> </a> <hr> <span class="flexpoint overhidden js-bookmark-btn-flexmenu"> <button type="button" class="fake-flexpoint icon-follow gtm_ip_nav_track" data-type="IP" data-id="318774600195535" data-name="ИП Карс Анастасия Геннадьевна" data-track-click-goal-param="follow_flex_ip" data-key-item="changes" data-flexmenu-action="subscribe"> <span> Отслеживать изменения </span> </button> </span> <a target="_blank" data-access-checker href="/ip/318774600195535?print=pdf" class="flexpoint overhidden icon-pdf gtm_nav_pdf" data-key-item="pdf" rel="nofollow" data-goal-param="interactions, pdf_report"><span>Отчёт в pdf версии</span></a> <a data-access-checker href="/ip/318774600195535?print=1" data-key-item="print" class="flexpoint overhidden icon-print gtm_nav_print" rel="nofollow"><span>Версия для печати</span></a> <div class="morebutton"> <span class="company-menu_more" data-key-item="more"><span>Еще</span></span> <div class="menupopup"> <div class="menupopup__header">Еще <button type="button" class="menupopup__close"></button> </div> <div class="menupopup__frame"></div> </div> </div>
+</nav> </div> <div class="sticky-tariffs__block"> <div class="head sticky" id="sticky-header"> <div class="container sticky-info"> <span class="sticky-close"> <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none"> <path d="M9 9L5 5M1 1L5 5M5 5L9 1M5 5L1 9" stroke="white" stroke-opacity="1" stroke-width="2" /> </svg> </span> <p> <span>Часть данных на этой странице скрыта.</span> Для просмотра полной информации оформите профессиональный&nbsp;доступ </p> <div class="sticky-btn"> <a href="/subscribe" data-goal-param="interactions, sticky-button" class="sticky-btn__link" data-save-return-url="true" data-track-click="cta_paywalls, sticky_button, null" > Подключить </a> </div> </div> </div> </div> </div> <div class="tiles tiles-ip" id="ab-test-wrp"> <div class="tiles__wrapper"> <div class="tiles__aside"> <div class="tiles__item" data-aside="1"> <div class="tile-item company-info company-info--ip maskmarq"> <div class="anketa-top"> <div class="flextext"> <h2 class="company-name has-copy clipper alt" data-clipboard-target="#clip_name" data-quetemplate-white-mini="true" data-quex="center"> <span class="copy_target" id="clip_name">Карс Анастасия Геннадьевна</span>&nbsp;<span class="copy_button copy_button"></span> </h2> </div> </div> <div class="company-requisites"> <div class="company-row"> <dl class="company-col "> <dt class="company-info__title">Гражданство</dt> <dd class="company-info__text"> РФ </dd> </dl> <dl class="company-col"> <dt class="company-info__title">Пол</dt> <dd class="company-info__text"> женский </dd> </dl> </div> <div class="company-row"> <dl class="company-col"> <dt class="company-info__title">ОГРНИП</dt> <dd class="company-info__text has-copy clipper" data-clipboard-target="#clip_ogrnip" data-quetemplate-white-mini="true" data-quex="center"> <span class="copy_target" id="clip_ogrnip">318774600195535</span> <span class="copy_button" data-clipboard-target="#clip_ogrnip"></span> </dd> <dd class="company-info__text"> от 9 апреля 2018 г.</dd> </dl> <dl class="company-col"> <dt class="company-info__title">ИНН</dt> <dd itemprop="taxID" class="company-info__text has-copy clipper" data-clipboard-target="#clip_inn" data-quetemplate-white-mini="true" data-quex="center"> <span class="copy_target" id="clip_inn">772878842295</span> <span class="copy_button" data-clipboard-target="#clip_inn"></span> </dd> </dl> </div> <div class="company-row"> <dl class="company-col"> <dt class="company-info__title">Дата регистрации</dt> <dd class="company-info__text">09.04.2018</dd> </dl> <dl class="company-col"> <dt class="company-info__title">Регион</dt> <dd class="company-info__text">город Москва</dd> </dl> </div> <div class="company-row company-row-claimed"> <span class="company-info__title"> Контакты <span data-quetip="Информация предоставлена представителем компании<br><br><a href='/business' data-track-click='not_masked,ip_dash_main,contacts,title'>Подробнее</a>" class="tooltip-opener quetip queimg" > </span> </span> <span class="company-info__contact phone iconer" itemprop="telephone"> <span class="offscreen">Телефон</span> <a href="tel:+79265242423" itemprop="telephone">+7 (926) 524-24-23</a> </span> <span class="company-info__contact site iconer"> <span class="offscreen">Сайт</span> <a href="http://www.asyakars.ru/" rel="nofollow noopener" target="_blank" data-track-click="not_masked,ip_dash_main,contacts,site" > www.asyakars.ru </a> </span> <span class="company-info__contact mail iconer"> <span class="offscreen">Электронная почта</span> <a href="mailto:info@asyakars.ru" data-track-click="not_masked,ip_dash_main,contacts,email"> info@asyakars.ru </a> </span> </div> </div> <div class="ip-bottom"> <div id="bookmark-btn" class="ip-bottom__main"> <div class="bottom__track "> <button type="button" class="btn btn-block btn-icon btn-follow-alt btn-follow-icon btn-white-pink gtm_main_ip_track" data-type="IP" data-id="318774600195535" data-name="Карс Анастасия Геннадьевна" data-track-click-goal-param="follow_ip" > <span> Следить за организацией </span> </button> </div> <span class="link-how mw-track_link bottom__link" > <a href="/articles/sledit-za-organizaciej?utm_source=rp&utm_medium=site&utm_campaign=articles&utm_content=monitoring-how" target="_blank" rel="nofollow">Как</a> это работает и&nbsp;<a href="/articles/zachem-kompanii-sledit-za-svoimi-kontragentami?utm_source=rp&utm_medium=site&utm_campaign=articles&utm_content=monitoring-why" target="_blank" rel="nofollow">зачем</a> нужно? </span> </div> <div class="company-btns"> <div class="report__btn"> <a data-access-checker data-goal-param="prohibited-interactions, pdf_report" href="?print=pdf" class="btn gtm_main_pdf" rel="nofollow" data-track-click="not_masked, ip_dash_main, reports, pdf_report" data-gsc-id="428225" > <i class="ico " data-ico="doc-pdf" > <svg width="32" height="32"><use href="#doc-pdf"></use></svg> </i> <span class="r-part"> <span class="big">Сводный отчёт</span> общие сведения об организации </span> </a> </div> <div class="report__btn"> <a href="/egrip?ogrnip=318774600195535" class="btn" rel="nofollow" data-goal="egr_main_button_ip" data-goal-param="interactions,fns_egr" data-track-click="not_masked, ip_dash_main, reports, egrip_report" > <i class="ico " data-ico="doc-alt" > <svg width="32" height="32"><use href="#doc-alt"></use></svg> </i> <span class="r-part"> <span class="big">Выписка из ЕГРИП</span> c подписью ФНС · на нужную дату </span> </a> </div> </div> </div> <div class="anketa-bottom"> <div class="anketa-actual">Актуально на 31.05.2026</div> <div class="flextext"> <div class="information-text"> ИП Карс Анастасия Геннадьевна, Москва — выписка из ЕГРИП и полные сведения из официальных источников: реквизиты, регистрация во внебюджетных фондах, 34 вида деятельности и прочая информация. </div> </div> <span class="claim-has-contact">Есть представитель <span class="quetip queimg tooltip-opener" data-quetip="Официальный представитель компании зарегистрирован на портале<br><br><a href='/business' data-track-click='not_masked,ip_dash_main,claim_contact,link'>Подробнее</a>"></span></span> </div> </div> </div> <div class="tiles__item" data-aside="7"> <div class="tile-item riscs-tile"> <h2 class="tile-item__title">Риски сотрудничества</h2> <div class="company-row company-info-item company-bankruptcy-row"> <span class="company-info__title">Банкротство</span> <p> Проверить наличие сведений о банкротстве организации в Едином федеральном реестре сведений о банкротстве (ЕФРСБ) </p> <span id="js-check-bankrupty" class="btn btn-blue btn-s js-show-prohibition" data-track-click="masked, ip_dash_riscs, bankruptcy, check-today" data-close-prohibition="true" data-goal-param="prohibited-interactions, check_bankruptcy" data-prohibition-link-goal-param="prohibited-interactions, s-check_bankruptcy"> Проверить </span> </div> <div class="company-row company-blocked-row company-info-item js-moved-elem" id="js-check-blocked-wrp"> <span class="company-info__title has-label">Банковские счета</span> <div class="info-block-actual blocked-info " data-name="blocking"> Проверить наличие решений о блокировке банковских счетов налоговыми органами </div> <span class="btn btn-blue btn-s"> Проверить </span> </div> <div class="company-row company-info-item js-moved-elem" id="js-check-rom-wrp"> <span class="company-info__title has-label"> Обеспечительные меры <span data-quetip='<b>Источник</b>: Реестр обеспечительных мер ФНС России. Сведения размещаются в течение трех рабочих дней со дня принятия соответствующего решения о способе обеспечения, но не ранее вступления в силу решения о привлечении к ответственности за совершение налогового правонарушения. ' class="tooltip-opener quetip queimg" ></span> </span> <div class="info-block-actual " id="js-rom-info" data-name="rom"> Применяются ли обеспечительные меры в отношении организации за налоговые правонарушения? </div> <span class="btn btn-blue btn-s check-counterparty js-show-prohibition" data-type="rom" data-goal-param="prohibited-interactions, check_reestr_obesp_mer" data-close-prohibition="true" data-prohibition-link-goal-param="prohibited-interactions, s-check_reestr_obesp_mer"> Проверить </span> </div> <div class="company-row company-info-item"> <div class="company-info__title"> Санкционные списки </div> <p class="tile-item__text"> Адресные санкции, риски вторичных, влияние ограничений импорта/экспорта товаров и технологий. </p> <button class="btn btn-blue btn-s js-show-prohibition" data-goal-param="check_sanctions_click" data-interaction="from_details_sanctions" data-prohibition-link-goal-param="s-sanctions_dash-ip" data-type="sanctions" data-close-prohibition="true" data-track-click="masked, ip_dash_riscs, sanctions, check-today" rel="nofollow"> Проверить </button> </div> <div class="company-row company-info-item js-moved-elem" id="js-check-gosreg-wrp"> <span class="company-info__title"> Документы для госрегистрации <span data-quetip='Информация о поданных в ФНС заявлениях по формам Р21 - Р27. Данные содержат сообщения о принятии решения о ликвидации, реорганизации и попытках компаний изменить адрес, руководителя и уставный капитал. Поданные документы — дополнительный сигнал для более пристального наблюдения за контрагентом.' class="tooltip-opener quetip queimg"> </span> </span> <div class="info-block-actual" data-name="gosreg"> Сведения о заявлениях о ликвидации, реорганизации, смене адреса, руководителя или уставного капитала </div> <span class="btn btn-blue btn-s"> Проверить </span> </div> <div class="company-row company-blocked-row company-info-item js-moved-elem" id="js-check-blacklist-wrp"> <span class="company-info__title">Черный список ЦБ</span> <div class="info-block-actual blocked-info " data-name="blocking"> Проверка надежности организации на основе данных о подозрительных операциях </div> <span class="btn btn-blue btn-s"> Проверить </span> </div>
+</div> </div> </div> <div class="tiles__main"> <div class="tiles__item"> <div class="tile-item"> <div class="requisites-ip"> <div class="requisites-ip__title">Реквизиты</div> <dl class="requisites-ip__list"> <dt>ОГРНИП</dt> <dd> <span class="has-copy clipper" data-clipboard-target="#req_ogrnip" data-quetemplate-white-mini="true" data-quex="center"> <span class="copy_target" id="req_ogrnip">318774600195535</span> <span class="copy_button"></span> </span> </dd> </dl> <dl class="requisites-ip__list"> <dt>ИНН</dt> <dd> <span class="has-copy clipper" data-clipboard-target="#req_inn" data-quex="center" data-quetemplate-white-mini="true"> <span class="copy_target" id="req_inn">772878842295</span> <span class="copy_button"></span> </span> </dd> </dl> <dl class="requisites-ip__list"> <dt>Вид предпринимательства</dt> <dd>Индивидуальный предприниматель</dd> </dl> <dl class="requisites-ip__list"> <dt>Дата регистрации</dt> <dd>9 апреля 2018 г.</dd> </dl> <dl class="requisites-ip__list"> <dt>Регистратор</dt> <dd>Межрайонная инспекция Федеральной налоговой службы № 46 по г. Москве</dd> </dl> <dl class="requisites-ip__list"> <dt>Дата постановки на учёт</dt> <dd>9 апреля 2018 г.</dd> </dl> <dl class="requisites-ip__list"> <dt>Наименование налогового органа</dt> <dd>Инспекция ФНС России № 28 по г.Москве</dd> </dl> </div> <div class="requisites-ip"> <div class="requisites-ip__title">Сведения Росстата</div> <dl class="requisites-ip__list"> <dt><span title="Общероссийский классификатор предприятий и организаций">ОКПО</span></dt> <dd> <span class="has-copy clipper" data-clipboard-target="#req_okpo" data-quetemplate-white-mini="true" data-quex="center"> <span class="copy_target" id="req_okpo">0128951648</span> <span class="copy_button"></span> </span> </dd> </dl> <dl class="requisites-ip__list"> <dt><span title="Общероссийский классификатор объектов административно-территориального деления">ОКАТО</span></dt> <dd> <span class="has-copy clipper" data-clipboard-target="#req_okato" data-quetemplate-white-mini="true" data-quex="center"> <span class="copy_target" id="req_okato">45293566000</span> <span class="copy_button"></span> </span> </dd> </dl> <dl class="requisites-ip__list"> <dt><span title="Общероссийский классификатор территорий муниципальных образований">ОКТМО</span></dt> <dd> <span class="has-copy clipper" data-clipboard-target="#req_oktmo" data-quetemplate-white-mini="true" data-quex="center"> <span class="copy_target" id="req_oktmo">45902000000</span> <span class="copy_button"></span> </span> </dd> </dl> </div> <div class="requisites-ip"> <div class="requisites-ip__title">Сведения о регистрации в <span title="Пенсионный фонд РФ">ПФР</span></div> <dl class="requisites-ip__list"> <dt>Регистрационный номер</dt> <dd> <span class="has-copy clipper" data-clipboard-target="#req_pfr" data-quetemplate-white-mini="true" data-quex="center"> <span class="copy_target" id="req_pfr">1139598666</span> <span class="copy_button"></span> </span> </dd> </dl> <dl class="requisites-ip__list"> <dt>Дата регистрации</dt> <dd>10 апреля 2018 г.</dd> </dl> <dl class="requisites-ip__list"> <dt>Наименование территориального органа</dt> <dd>Отделение Фонда пенсионного и социального страхования Российской Федерации по г. Москве и Московской области</dd> </dl> </div> <div class="requisites-ip"> <div class="requisites-ip__title"> Специальный налоговый режим<span data-quetip="&lt;b&gt;Источник:&lt;/b&gt; реестр &quot;Сведения о специальных налоговых режимах, применяемых налогоплательщиками (ИП)&quot; ФНС РФ. Данные на 01.05.2026" class="tooltip-opener quetip queimg"></span> </div> <dl class="requisites-ip__list"> <dt>Применяется</dt> <dd> УСН <span data-quetip="Упрощенная система налогообложения" class="tooltip-opener quetip queimg"></span> </dd> </dl> </div> <div class="requisites-ip"> <div class="requisites-ip__title">Сведения <span title="Реестр малого и среднего предпринимательства">МСП</span><span class="quetip queimg tooltip-opener" data-quetip="Источник данных: ФНС РФ,<br>дата последнего обновления<br>информации 14.05.2026.">&nbsp;</span> </div> <dl class="requisites-ip__list"> <dt>Дата включения</dt> <dd>10 мая 2018 г.</dd> </dl> <dl class="requisites-ip__list"> <dt>Категория субъекта</dt> <dd>Микропредприятие</dd> </dl> </div> </div> </div> <noindex class="tiles__item" data-name="promo"> <div class="tile-item fl-promo"> <img class="fl-promo__img" src="/images/fl_landing/illustration-min.svg" loading="lazy" alt="Профессиональный доступ + расширенная проверка физлиц"> <img class="fl-promo__img fl-promo__img--mobile" src="/images/fl_landing/illustration-min-alt.svg" loading="lazy" alt="Профессиональный доступ + расширенная проверка физлиц"> <div class="fl-promo__content"> <div class="fl-promo__title"> Профессиональный доступ <span>+ расширенная проверка физлиц</span> </div> <div> Узнайте больше информации о предпринимателе — непогашенные задолженности, участие в судах, нахождение в розыске, заблокированные счета, банкротство и многое другое. </div> <button class="btn btn-secondary fl-promo__btn js-download-report">Подробнее</button> </div> <a href="/subscribe-plus" class="js-download-report link-fullSize" rel="nofollow" title="Профессиональный доступ + расширенная проверка физлиц"> Подробнее </a> </div> </noindex> <div class="tiles__row"> <div class="tiles__item left" data-name="okved" style="order:6"> <div class="tile-item okved-tile"> <h2 class="tile-item__title"> <a href="/okved/318774600195535" rel="nofollow" data-goal="okved_main_ip" data-track-click="not_masked,ip_dash_okved,title,link" > Виды деятельности </a> </h2> <p class="tile-item__text">Виды деятельности в соответствии с классификатором ОКВЭД.</p> <div class="tile-item__text-title">Основной </div> <p class="tile-item__text">Деятельность специализированная в области дизайна <span class="bolder">(74.10)</span></p> <div class="tile-item__text-title">Дополнительные (33)</div> <p class="tile-item__text">Изготовление печатных форм и подготовительная деятельность <span class="bolder">(18.13)</span></p> <p class="tile-item__text">Деятельность агентов по оптовой торговле текстильными изделиями, одеждой, обувью, изделиями из кожи и меха <span class="bolder">(46.16)</span></p> <p class="tile-item__text">Торговля оптовая текстильными изделиями <span class="bolder">(46.41)</span></p> <a href="/okved/318774600195535" class="see-details" rel="nofollow" data-goal="okved_all_ip" data-track-click="not_masked,ip_dash_okved,more,link">Смотреть все</a> </div> </div> <div class="tiles__item left" data-name="arbitr" style="order:8"> <div class="tile-item tab-parent arbitr-tile"> <h2 class="tile-item__title"> Арбитражные дела </h2> <p class="tile-item__text"> Информация об участии ИП в арбитражных делах отсутствует. </p> </div> </div> <div class="tiles__item left" data-name="trademarks" style="order:10"> <div class="tile-item trademarks-tile"> <h2 class="tile-item__title">Товарные знаки</h2> <div class="tile-item__text">Информация о товарных знаках ИП Карс Анастасия Геннадьевна не найдена.</div> </div> </div> <div class="tiles__item left" data-name="leasing" style="order:12"> <div class="tile-item leasing-tile tab-parent"> <h2 class="tile-item__title">Лизинг</h2> <div class="tile-item__text"> Информация о лизинговых договорах ИП Карс Анастасия Геннадьевна не найдена. </div> </div> </div> <div class="tiles__item left" data-name="inspections" style="order:14"> <div class="tile-item inspections-tile"> <h2 class="tile-item__title"> Проверки </h2> <p class="tile-item__text">Данных о проведении в отношении ИП Карс Анастасия Геннадьевна плановых и внеплановых проверок нет.</p> </div> </div> <div class="tiles__item left" data-name="history" data-aside="8"> <div class="tile-item history-tile"> <h2 class="tile-item__title"> <a href="/history/318774600195535" class="gtm_h_header" rel="nofollow" data-goal="history_last_up_ip" data-goal-param="from_details_history" data-track-click="not_masked,ip_dash_history,title,link" > События </a> </h2> <div class="connexion"> <div class="connexion-col"> <div class="connexion-col__title">Важные</div> <div class="connexion-col__num"> <i class="ico " data-ico="warning-alt" > <svg width="32" height="32"><use href="#warning-alt"></use></svg> </i> <a rel="nofollow" href="/history/318774600195535?critical=1" data-goal-param="from_detail_history_critical" data-track-click="not_masked,ip_dash_history,critical,number"> 1 </a> </div> </div> <div class="connexion-col"> <div class="connexion-col__title">Реестр МСП</div> <div class="connexion-col__num"> <a rel="nofollow" href="/history/318774600195535?origin=msp" data-goal-param="from_detail_history_msp" data-track-click="not_masked,ip_dash_history,msp,number"> 1 </a> </div> </div> </div> <div class="tile-item__text font-normal">Последние изменения:</div> <div class="history-tile__item"> <div class="history-tile__item__title">27.11.2020</div> <div class="history-tile__item__description"> <p> <i class="ico " data-ico="warning-alt" > <svg width="32" height="32"><use href="#warning-alt"></use></svg> </i> Представитель индивидуального предпринимателя зарегистрирован на портале </p> </div> </div> <div class="history-tile__item"> <div class="history-tile__item__title">10.05.2018</div> <div class="history-tile__item__description"> <p> <i class="ico " data-ico="warning-alt" > <svg width="32" height="32"><use href="#warning-alt"></use></svg> </i> ИП включен в Реестр малого и среднего предпринимательства, категория: микропредприятие </p> </div> </div> <div class="history-tile__item"> <div class="history-tile__item__title">11.04.2018</div> <div class="history-tile__item__description"> <p> Представление сведений о регистрации в качестве страхователя в территориальном органе Пенсионного фонда Российской Федерации </p> </div> </div> <div class="history-tile__item"> <div class="history-tile__item__title">09.04.2018</div> <div class="history-tile__item__description"> <p> Представление сведений об учете в налоговом органе </p> </div> </div> <a href="/history/318774600195535" rel="nofollow" class="tile-link-more" data-goal-param="from_details_history" data-track-click="not_masked,ip_dash_history,more,button"> <i class="ico " data-ico="changes_arrow" > <svg width="32" height="32"><use href="#changes_arrow"></use></svg> </i> <span>Все события</span> </a> <div class="js-moved-elem" id="bookmark-btn-no-link"> <div class="bottom__track "> <button type="button" class="btn btn-block btn-icon btn-follow-alt btn-follow-icon btn-white-pink gtm_main_track" data-type="IP" data-id="318774600195535" data-name="Карс Анастасия Геннадьевна" data-track-click-goal-param="follow_last_changes_ip" > <span> Получать уведомления </span> </button> </div> </div> </div> </div> <div class="tiles__item left" data-name="similar" data-aside="10"> <div class="tile-item similar-tile"> <h2 class="tile-item__title"> Похожие на ИП Карс Анастасия Геннадьевна предприниматели </h2> <p class="tile-item__text"> Похожие предприниматели подбираются на основе совпадения основного вида деятельности и региона ведения бизнеса: </p> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/ip/321774600099791" data-goal-param="ip_to_ip" data-track-click="not_masked,ip_dash_similar,to_ip,link"> <span>ИП Шелестовская Евгения Александровна</span> </a> </div> </div> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/ip/321774600529742" data-goal-param="ip_to_ip" data-track-click="not_masked,ip_dash_similar,to_ip,link"> <span>ИП Токмакова Мария Львовна</span> </a> </div> </div> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/ip/325774600804576" data-goal-param="ip_to_ip" data-track-click="not_masked,ip_dash_similar,to_ip,link"> <span>ИП Усанов Алексей Валентинович</span> </a> </div> </div> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/ip/326774600239783" data-goal-param="ip_to_ip" data-track-click="not_masked,ip_dash_similar,to_ip,link"> <span>ИП Гаврилов Александр Вячеславович</span> </a> </div> </div> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/ip/324774600266751" data-goal-param="ip_to_ip" data-track-click="not_masked,ip_dash_similar,to_ip,link"> <span>ИП Анжарини Хайсам</span> </a> </div> </div> </div> </div> <div class="tiles__item left" data-name="similar" data-aside="11"> <div class="tile-item similar-tile"> <h2 class="tile-item__title"> Похожие организации </h2> <p class="tile-item__text"> Похожие организации подбираются на основе совпадения региона ведения бизнеса: </p> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/id/7047427" data-goal-param="ip_to_ul" data-track-click="not_masked,ip_dash_similar,to_ul,link"> <span>ООО &quot;Фаворит-Финанс&quot;</span> </a> </div> </div> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/id/7271006" data-goal-param="ip_to_ul" data-track-click="not_masked,ip_dash_similar,to_ul,link"> <span>ООО &quot;ИК &quot;Венец&quot;</span> </a> </div> </div> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/id/6750249" data-goal-param="ip_to_ul" data-track-click="not_masked,ip_dash_similar,to_ul,link"> <span>ООО &quot;МФО &quot;ИК &quot;Столица&quot;</span> </a> </div> </div> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/id/5716249" data-goal-param="ip_to_ul" data-track-click="not_masked,ip_dash_similar,to_ul,link"> <span>ООО &quot;ВСК-Ипотечный Брокер&quot;</span> </a> </div> </div> <div class="similar-item"> <div class="similar-item__title"> <a class="link-arrow noarrow" href="/id/7250780" data-goal-param="ip_to_ul" data-track-click="not_masked,ip_dash_similar,to_ul,link"> <span>ООО &quot;Тиджи Финанс&quot;</span> </a> </div> </div> </div> </div> <div class="tiles__item right" data-name="pledge" style="order:7"> <div class="tile-item pledge-tile tab-parent"> <h2 class="tile-item__title">Залоги</h2> <div class="tile-item__text"> Информация о залогах ИП Карс Анастасия Геннадьевна не найдена. </div> </div> </div> <div class="tiles__item right" data-name="connections" style="order:9"> <div class="tile-item connections-tile tab-parent"> <h2 class="tile-item__title"> Связи </h2> <p class="tile-item__text">Связанных с ИП Карс Анастасия Геннадьевна организаций и индивидуальных предпринимателей не выявлено.</p> </div> </div> <div class="tiles__item right" data-name="facts" style="order:11"> <div class="tile-item facts-tile"> <h2 class="tile-item__title">Сообщения о сущфактах</h2> <div class="tile-item__text">Связанных с ИП Карс Анастасия Геннадьевна сущфактов не найдено.</div> </div> </div> <div class="tiles__item right" data-name="gz" style="order:13"> <div class="tile-item tab-parent gz-tile gz-outcome" > <h2 class="tile-item__title" data-label="новые данные" data-label-pos="right"> Госзакупки </h2> <p class="tile-item__text">Сведения об участии ИП Карс Анастасия Геннадьевна в госзакупках в качестве поставщика по 44-ФЗ, 94-ФЗ и 223-ФЗ отсутствуют.</p> </div> </div> <div class="tiles__item right" data-name="licenses" style="order:15"> <div class="tile-item licenses-tile"> <h2 class="tile-item__title"> Лицензии </h2> <p class="tile-item__text">Сведения о лицензиях у ИП отсутствуют.</p> </div> </div> <div class="tiles__item right" data-name="resume" data-aside="9"> <div class="tile-item resume-tile resume-tile__hasBg" itemprop="description"> <h2 class="tile-item__title">Краткая справка</h2> <p class="resume-tile__text">ИП Карс Анастасия Геннадьевна зарегистрирован 9 апреля 2018 г. регистратором Межрайонная инспекция Федеральной налоговой службы № 46 по г. Москве. Основным видом деятельности является «Деятельность специализированная в области дизайна». ИП присвоены ИНН 772878842295 и ОГРНИП 318774600195535.</p> </div> </div> </div> </div> </div> </div> </div> </div> <div class="footer-wrp"> <footer class="footer"> <div id="FooterBookmark"></div> <div class="container"> <div class="footer-inner breadcrumbs-view mobile-padding-b-more"> <a href="/" class="footer-logo" title="Rusprofile.ru - информация о российских юридических лицах и предпринимателях"> <img src="/images/icons/standalone/logo_footer.svg" width="164" height="32" alt="Rusprofile.ru - информация о российских юридических лицах и предпринимателях" loading="lazy" > </a> <nav> <span><a href="/about" data-track-click="footer_menu,about">О компании</a></span> <span><a href="/sources" data-track-click="footer_menu,sources">Источники данных</a></span> <span><a href="/team" data-track-click="footer_menu,team">Команда</a></span> <span><a href="/support/contact" data-open-mw-support data-after-sbm="feedback_click">Обратная связь</a></span> </nav> <div class="footer-bottom"> <div class="footer-bottom-part"> <div class="footer-bottom-part__item"> <img src="/images/icons/standalone/rpo.svg?v2" class="footer-partner" height="36" width="120" alt="Реестр программного обеспечения" loading="lazy"> </div> <span class="copy"> Rusprofile.ru © 2013-2026 </span> </div> <nav> <span style="order: 1;"><a href="/support/rules.html" class="tablet-wrap">Пользовательское соглашение</a></span> <span style="order: 3;"><a href="/support/terms.html">Основания размещения информации</a></span> <span style="order: 2;"><a href="/support/privacy.html" class="tablet-wrap">Политика конфиденциальности</a></span> <span style="order: 4;"><a href="https://baturin.ru?rp" rel="nofollow" target="_blank">Дизайн B-G</a> © 2018</span> </nav> <ol class="breadcrumbs" itemscope itemtype="https://schema.org/BreadcrumbList"> <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"> <a itemprop="item" href="https://www.rusprofile.ru"> <span itemprop="name">Главная</span> </a> <meta itemprop="position" content="1" /> </li> <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"> <a itemprop="item" href="https://www.rusprofile.ru/ip"> <span itemprop="name">✅ Все о предпринимателе</span> </a> <meta itemprop="position" content="2" /> </li> <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"> <span itemprop="name"> ИП Карс Анастасия Геннадьевна </span> <meta itemprop="position" content="3" /> </li>
+</ol> </div> </div> </div>
+</footer> <div class="footer-vidgets"> <div id="feedback-bbl-wrap"> <a href="/support/contact" id="feedback-bbl" data-open-mw-support class="feedback-bbl min hidden"> <span class="ico ico-m"> <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M21 0.990784H3C1.3125 0.990784 0 2.35016 0 3.99078V17.4908C0 19.1783 1.3125 20.4908 3 20.4908H7.5V24.4283C7.5 24.897 8.01562 25.1783 8.39062 24.897L14.25 20.4908H21C22.6406 20.4908 24 19.1783 24 17.4908V3.99078C24 2.35016 22.6406 0.990784 21 0.990784ZM13.5 13.3658C13.5 13.6002 13.3125 13.7408 13.125 13.7408H6.375C6.14062 13.7408 6 13.6002 6 13.3658V12.6158C6 12.4283 6.14062 12.2408 6.375 12.2408H13.125C13.3125 12.2408 13.5 12.4283 13.5 12.6158V13.3658ZM18 8.86578C18 9.10016 17.8125 9.24078 17.625 9.24078H6.375C6.14062 9.24078 6 9.10016 6 8.86578V8.11578C6 7.92828 6.14062 7.74078 6.375 7.74078H17.625C17.8125 7.74078 18 7.92828 18 8.11578V8.86578Z" fill="white"/> </svg> </span> </a>
+</div> <div id="cookie-banner"></div>
+</div> <div class="illustrate-hero illustrate-hero-footer-l"></div> <div class="illustrate-hero illustrate-hero-footer-r"></div> </div> <div id="prohibition-wrp"></div> </div> <script>var rp_user_id = undefined;</script> <script>
+                        _searchParams = {"DELAY":"100","MINDELAY":"500"};
+                    </script> <script type="module" src="/assets/dashboards.CzVZuC0b.js" async></script> <script>
+        RPF.has_pro = false;
+        RPF.ip_dash = true;
+        RPF.report_remains = null;
+
+        RPF.provide.app.pageType = 'dashboard';
+        RPF.store.check_counterparty = {
+            inn: '772878842295',
+            ogrn: '318774600195535',
+            id: '318774600195535',
+            ipPage: true,
+            account_blocking: {
+                                hasData: false
+            },
+            rom: {
+                date: '01.06.2026',
+                actual: 0,
+                not_checked: '1'
+            },
+            gosreg: {
+                date: '01.06.2026',
+                not_checked: '1',
+                count: 0
+            },
+            cbr_blacklist: {
+                            }
+        };
+
+        RPF.store.modal = {
+            props: {
+                entityType: 'IP',
+                company: {
+                    name: 'Карс Анастасия Геннадьевна',
+                    address: 'город Москва',
+                }
+            }
+        };
+
+        // тут обязательно такие кавычки, так как в данных ФЛ может быть символ '
+        RPF.personal_object = {
+            last_name: `Карс`,
+            first_name: `Анастасия`,
+            patronymic: `Геннадьевна`,
+            inn: '772878842295'
+        };
+
+        window.yaParams = {"okved":"74.10","region":"77","active":"yes","profile":"1"};
+
+    </script> <script>
+                
+                RPF.iconsVer = '8985ff9127bc6030aa2c6cb484d62f09';
+                RPF.screenlimit1 = 767;
+                RPF.screenlimit2 = 1199;
+                
+                                                RPF.dashboard_name = `Карс Анастасия Геннадьевна`;
+                                RPF.id = 318774600195535;
+                RPF.company_ip = 1;
+                RPF.company_ogrn = 0;
+                RPF.company_ogrnip = 318774600195535;
+                RPF.company_inn = 772878842295;
+                RPF.target_type = 'IP';
+                                                                RPF.paid_subscription_access_type = '';
+                RPF.TARIFF_GROUP_NEW_BASE = 'default4';
+
+                RPF.report_remains = null;
+
+                RPF.store.user = {"id":null,"email":null,"new_email":null,"name":null,"confirmed":false,"token":null,"has_pro":false,"has_pro_plus":false,"has_access":false,"access_type":null,"access_expired":null,"has_personal_info":null,"has_password":null,"bookmarks_unread_count":null,"bookmarks_limit":0,"bookmarks_count":null,"bookmark_state":false,"tracking_list_id":null,"tracking_list_name":null,"tracking_list_item_id":null,"paid_subscription_tariff_label":null,"paid_subscription_expired_tariff_label":null,"paid_subscription_tariff_group":null,"report_exists":false,"report_remains":0,"report_cost":null,"report_new":null,"siteKey":"6LcAn-ErAAAAAKQewKyduyezl4YVE4wkP5uc1cyv","has_captcha":true,"disable_captcha":false,"balance_download_search":null,"phone_confirmation_enabled":true,"masked_phone":"","has_phone":null};
+
+                RPF.flash_upsale_need = false;
+
+                                                
+                RPF.hit_time = 1780266218;                                                RPF.rpf6253 = Boolean();
+
+                                RPF.growthbook_viewed = "[]";
+                                                RPF.viewCountDisallowDay = Boolean();
+                RPF.viewCountDisallowMonth = Boolean();
+                RPF.viewCountDisallow = Boolean();
+                RPF.viewCountLimitDay = Number();
+                RPF.viewCountLimitMonth = Number();
+
+                                RPF.store.user.bookmarks_limit = Number();
+                
+                /* EXP RPF-10838 */
+                RPF.showModalPersonalInfo = false;
+
+                /* EXP RPF-11059 */
+                RPF.showClaimingGiftBanner = Boolean(false);
+
+                /* EXP RPF-11122 */
+                RPF.showFlGiftBanner = Boolean(false);
+
+                                RPF.canGetFLForForm = Boolean(false);
+                                
+                /* EXP RPF-11519 */
+                                
+                //polyfill iOS 11-12 Can't find variable: globalThis
+                !function(t){function e(){var e=this||self;e.globalThis=e,delete t.prototype._T_}"object"!=typeof globalThis&&(this?e():(t.defineProperty(t.prototype,"_T_",{configurable:!0,get:e}),_T_))}(Object);
+            </script> <script type="module" src="/assets/app_main.BV3ZQYR2.js" async></script> <script>
+                                                            window.allow_quetip_mask = 1;
+                                    if (typeof(window.yaParams) === 'undefined' || !window.yaParams) { window.yaParams = {}; }
+            window.yaParams['PaidAccess'] = 0;
+            window.yaParams['PaidAccessType'] = 0;
+            window.yaParams['PaidAccessTariffTerm'] = 0;
+                                    window.yaParams['NoAd'] = 1;
+                                </script> <!-- Google Tag Manager --
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NQJPVZZ');</script>
+-- End Google Tag Manager --> <div> <link rel="dns-prefetch" href="https://mc.yandex.ru/"> <link rel="preload" href="https://mc.yandex.ru/metrika/tag.js" as="script"> <!-- Yandex.Metrika counter --> <script type="text/javascript" >
+const isOurSite = window.location.hostname.match(/\.rusprofile\.ru$/);
+const isTestSite = window.location.hostname.indexOf('test') !== -1;
+const isStaffDevice = document.cookie.match(/(?:^|; )rpf5830-is-staff=1(?:$|;)/);
+if (isOurSite && (!isStaffDevice || isTestSite)) {
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(39561835, "init", { id:39561835, clickmap:true, trackLinks:false, accurateTrackBounce:true, webvisor:true, trackHash:true, userParams: { UserID: window.rp_user_id }, params: window.yaParams||{}}); 
+}
+</script> <noscript><div><img src="https://mc.yandex.ru/watch/39561835" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter --> <!--
+<script id="ngtm_gsc" type="text/javascript" async src="//l.getsitecontrol.com/l4693d4m.js"></script>
+
+<script>
+
+    (function() {
+
+        window.gsc=window.gsc||function(){
+
+            (gsc.q=gsc.q||[]).push(arguments)
+
+        };
+
+        var yaParams = window.yaParams||{};
+
+        var gscParams = {};
+
+        var keys = ['PaidAccess', 'PaidAccessType', 'UserID'];
+
+        var gscParamsEmpty = true;
+
+        for (var i=0; i<keys.length; i++) {
+
+            var key = keys[i];
+
+            if (yaParams.hasOwnProperty(key)) {
+
+                gscParams[key] = yaParams[key];
+
+                gscParamsEmpty = false;
+
+            }
+
+        }
+
+        if (RPF && RPF.rp_user_age) {
+            gscParams['UserAge'] = Math.floor(RPF.rp_user_age/86400);
+        }
+
+        if (typeof page_description !== 'undefined' && page_description.paid_subscription_expires) {
+
+            gscParams['PaidSubscriptionExpires'] = page_description.paid_subscription_expires;
+
+            gscParamsEmpty = false;
+
+        }
+
+        gscParams['UserIDMod10'] = gscParams['UserID'] % 10;
+                if ('ym' in window) {
+                    ym(39561835, 'getClientID', function(clientId) { gscParams['ClientID'] = clientId; } );
+            }
+
+
+        if (!gscParamsEmpty) {
+
+            gsc('params', gscParams);
+
+        }
+
+    }());
+
+</script> --> <!--<script type="text/javascript">
+    window.ga4 = window.ga4 || {
+        measurementId: 'G-CBJ78TZ8LE',
+        _onLoadCallbacks: [],
+        onLoad(callback) {
+            this._onLoadCallbacks.push(callback);
+        }
+    };
+</script>--> <!--
+<link rel="dns-prefetch" href="https://www.googletagmanager.com/">
+<link rel="preload" href="https://www.googletagmanager.com/gtm.js?id=GTM-NQJPVZZ" as="script">
+--> </div> <div id="v-root"></div> <svg id="svg_defs"><defs></defs></svg> <div style="display: none;" id="svg-sprite-container"> <svg xmlns="http://www.w3.org/2000/svg"> <symbol viewBox="0 0 18 18" id="search-new" fill="none"> <path d="M16.6 18L10.3 11.7C9.8 12.1 9.225 12.4167 8.575 12.65C7.925 12.8833 7.23333 13 6.5 13C4.68333 13 3.14583 12.3708 1.8875 11.1125C0.629167 9.85417 0 8.31667 0 6.5C0 4.68333 0.629167 3.14583 1.8875 1.8875C3.14583 0.629167 4.68333 0 6.5 0C8.31667 0 9.85417 0.629167 11.1125 1.8875C12.3708 3.14583 13 4.68333 13 6.5C13 7.23333 12.8833 7.925 12.65 8.575C12.4167 9.225 12.1 9.8 11.7 10.3L18 16.6L16.6 18ZM6.5 11C7.75 11 8.8125 10.5625 9.6875 9.6875C10.5625 8.8125 11 7.75 11 6.5C11 5.25 10.5625 4.1875 9.6875 3.3125C8.8125 2.4375 7.75 2 6.5 2C5.25 2 4.1875 2.4375 3.3125 3.3125C2.4375 4.1875 2 5.25 2 6.5C2 7.75 2.4375 8.8125 3.3125 9.6875C4.1875 10.5625 5.25 11 6.5 11Z" fill="currentcolor"/> </symbol> <symbol viewBox="0 0 24 24" id="user_new"> <path d="M12 0C5.34375 0 0 5.39062 0 12C0 18.6562 5.34375 24 12 24C18.6094 24 24 18.6562 24 12C24 5.39062 18.6094 0 12 0ZM12 6C13.8281 6 15.375 7.54688 15.375 9.375C15.375 11.25 13.8281 12.75 12 12.75C10.125 12.75 8.625 11.25 8.625 9.375C8.625 7.54688 10.125 6 12 6ZM12 21C9.51562 21 7.26562 20.0156 5.625 18.375C6.375 16.4062 8.25 15 10.5 15H13.5C15.7031 15 17.5781 16.4062 18.3281 18.375C16.6875 20.0156 14.4375 21 12 21Z" fill="currentcolor"/> </symbol> <symbol viewBox="0 0 14 24" id="bell"> <path d="M8 16C9.09375 16 9.96875 15.125 9.96875 14H6C6 15.125 6.875 16 8 16ZM14.7188 11.3438C14.125 10.6875 12.9688 9.71875 12.9688 6.5C12.9688 4.09375 11.2812 2.15625 8.96875 1.65625V1C8.96875 0.46875 8.53125 0 8 0C7.4375 0 7 0.46875 7 1V1.65625C4.6875 2.15625 3 4.09375 3 6.5C3 9.71875 1.84375 10.6875 1.25 11.3438C1.0625 11.5312 0.96875 11.7812 1 12C1 12.5312 1.375 13 2 13H13.9688C14.5938 13 14.9688 12.5312 15 12C15 11.7812 14.9062 11.5312 14.7188 11.3438Z" fill="currentcolor"/> </symbol> <symbol viewBox="0 0 12 16" id="doc-pdf"> <path d="M5.65625 8.03125C5.84375 7.71875 5.875 6.5625 5.59375 6.5625C5.53125 6.5625 5.5 7.53125 5.65625 8.03125ZM5.625 9.5C5.375 10.125 5.0625 10.8438 4.71875 11.4375C5.3125 11.2188 5.9375 10.9062 6.6875 10.7812C6.3125 10.4688 5.90625 10.0312 5.625 9.5ZM2.6875 13.4062C2.6875 13.4062 3.09375 13.2188 3.78125 12.125C3.5625 12.3438 2.84375 12.9062 2.6875 13.4062ZM7.75 5C7.3125 5 7 4.6875 7 4.25V0H0.75C0.3125 0 0 0.34375 0 0.75V15.25C0 15.6875 0.3125 16 0.75 16H11.25C11.6562 16 12 15.6875 12 15.25V5H7.75ZM7.5 10.375C8.09375 10.3125 9.34375 10.1875 9.78125 10.5938C10.1562 10.9688 10.0938 11.9688 9.15625 11.9688C8.65625 11.9688 7.84375 11.7188 7.15625 11.3438C6.40625 11.4688 5.5 11.8125 4.6875 12.0938C3.90625 13.4375 3.34375 14 2.78125 14C2.625 14 2.28125 13.9062 2.125 13.6875C1.53125 12.9688 2.96875 12 3.8125 11.5625C3.8125 11.5625 3.8125 11.5625 3.84375 11.5625C4.21875 10.9062 4.75 9.75 5.09375 8.875C4.84375 7.875 4.6875 7.0625 4.84375 6.46875C5.03125 5.875 6.1875 5.78125 6.34375 6.6875C6.5 7.25 6.28125 8.125 6.15625 8.6875C6.4375 9.46875 6.875 10 7.5 10.375ZM11.7812 3.28125L8.71875 0.21875C8.5625 0.09375 8.375 0 8.1875 0H8V4H12V3.8125C12 3.625 11.9062 3.4375 11.7812 3.28125ZM9.4375 11.2812C9.59375 11.1875 9.375 10.9062 8.125 11C9.28125 11.5 9.4375 11.2812 9.4375 11.2812Z" fill="currentColor"/> </symbol> <symbol viewBox="0 0 12 16" id="doc-alt"> <path d="M7 4.25V0H0.75C0.3125 0 0 0.34375 0 0.75V15.25C0 15.6875 0.3125 16 0.75 16H11.25C11.6562 16 12 15.6875 12 15.25V5H7.75C7.3125 5 7 4.6875 7 4.25ZM2 2.25C2 2.125 2.09375 2 2.25 2H4.75C4.875 2 5 2.125 5 2.25V2.75C5 2.90625 4.875 3 4.75 3H2.25C2.09375 3 2 2.90625 2 2.75V2.25ZM2 4.25C2 4.125 2.09375 4 2.25 4H4.75C4.875 4 5 4.125 5 4.25V4.75C5 4.90625 4.875 5 4.75 5H2.25C2.09375 5 2 4.90625 2 4.75V4.25ZM8 12H9.5C9.75 12 10 12.25 10 12.5C10 12.7812 9.75 13 9.5 13H8C7.5 13 7.03125 12.7188 6.8125 12.2812C6.71875 12.0938 6.5625 12.0625 6.5 12.0625C6.40625 12.0625 6.25 12.0938 6.15625 12.25L5.9375 12.75C5.84375 12.9062 5.65625 13 5.5 13C5.46875 13 5.46875 13 5.4375 13C5.25 13 5.0625 12.875 5 12.6875L4.5 11.0938L4.15625 12.0938C3.96875 12.6562 3.46875 13 2.875 13H2.5C2.21875 13 2 12.7812 2 12.5C2 12.25 2.21875 12 2.5 12H2.875C3.03125 12 3.15625 11.9062 3.21875 11.7812L3.78125 10.0625C3.875 9.75 4.15625 9.5625 4.5 9.5625C4.8125 9.5625 5.09375 9.75 5.1875 10.0625L5.625 11.375C6.25 10.875 7.3125 11.0625 7.6875 11.8125C7.75 11.9375 7.875 12 8 12ZM11.7812 3.28125L8.71875 0.21875C8.5625 0.09375 8.375 0 8.1875 0H8V4H12V3.8125C12 3.625 11.9062 3.4375 11.7812 3.28125Z" fill="currentColor"/> </symbol> <symbol viewBox="0 0 20 17" id="warning-alt"> <path d="M18.7812 14.7812L11.2812 1.75C10.7188 0.78125 9.25 0.75 8.6875 1.75L1.1875 14.7812C0.625 15.75 1.34375 17 2.5 17H17.4688C18.625 17 19.3438 15.7812 18.7812 14.7812ZM10 12.0625C10.7812 12.0625 11.4375 12.7188 11.4375 13.5C11.4375 14.3125 10.7812 14.9375 10 14.9375C9.1875 14.9375 8.5625 14.3125 8.5625 13.5C8.5625 12.7188 9.1875 12.0625 10 12.0625ZM8.625 6.90625C8.59375 6.6875 8.78125 6.5 9 6.5H10.9688C11.1875 6.5 11.375 6.6875 11.3438 6.90625L11.125 11.1562C11.0938 11.375 10.9375 11.5 10.75 11.5H9.21875C9.03125 11.5 8.875 11.375 8.84375 11.1562L8.625 6.90625Z" fill="#F8B200"/> </symbol> <symbol viewBox="0 0 24 24" id="changes_arrow"> <path d="M23.625 12C23.5781 5.57812 18.375 0.375 12 0.375C8.85938 0.375 6.04688 1.64062 3.9375 3.60938L1.64062 1.3125C1.17188 0.84375 0.375 1.17188 0.375 1.82812V8.625C0.375 9.04688 0.703125 9.375 1.125 9.375H7.92188C8.57812 9.375 8.90625 8.57812 8.4375 8.10938L6.04688 5.71875C7.59375 4.26562 9.70312 3.375 12 3.375C16.7344 3.375 20.625 7.26562 20.625 12C20.625 16.7812 16.7344 20.625 12 20.625C9.9375 20.625 8.10938 19.9688 6.60938 18.7969C6.1875 18.4219 5.53125 18.4688 5.10938 18.8906L4.59375 19.4062C4.125 19.875 4.17188 20.6719 4.6875 21.0938C6.65625 22.6875 9.23438 23.6719 12 23.625C18.375 23.625 23.625 18.4219 23.625 12ZM15.1406 15.7031L15.5625 15.0938C15.9844 14.625 15.8906 13.9219 15.375 13.5469L13.5 12.0469V7.125C13.5 6.51562 12.9844 6 12.375 6H11.625C10.9688 6 10.5 6.51562 10.5 7.125V13.5L13.5469 15.8906C14.0156 16.2656 14.7188 16.1719 15.1406 15.7031Z" fill="currentcolor"/> </symbol> </svg> </div>
+</body>
+</html> 
