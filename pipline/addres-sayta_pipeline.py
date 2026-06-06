@@ -10,20 +10,95 @@ from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 
 
-EXCEL_FILE = "ip_fio_links_str_15.xlsx"
+EXCEL_FILE = "fio_links_250_unique.xlsx"
 BASE_URL = "https://www.rusprofile.ru"
 
 # Нумерация колонок в openpyxl начинается с 1:
 # 3 = колонка C
 LINK_COL = 3
 
-# Начиная со 2 строки, если в 1 строке заголовки
-START_ROW = 2
+# Начиная со 48 строки, если в 1 строке заголовки
+START_ROW = 48
 
 # Пауза между обычными запросами.
 # Лучше не ставить 1 секунду: Rusprofile быстро начинает показывать капчу.
 REQUEST_DELAY_SECONDS_MIN = 4.0
 REQUEST_DELAY_SECONDS_MAX = 12.0
+
+USER_AGENTS = [
+    # 1. Chrome / Windows 10
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36",
+
+    # 2. Chrome / Windows 11
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/125.0.0.0 Safari/537.36",
+
+    # 3. Chrome / macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36",
+
+    # 4. Chrome / Linux
+    "Mozilla/5.0 (X11; Linux x86_64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36",
+
+    # 5. Firefox / Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) "
+    "Gecko/20100101 Firefox/126.0",
+
+    # 6. Firefox / macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:126.0) "
+    "Gecko/20100101 Firefox/126.0",
+
+    # 7. Firefox / Linux
+    "Mozilla/5.0 (X11; Linux x86_64; rv:126.0) "
+    "Gecko/20100101 Firefox/126.0",
+
+    # 8. Edge / Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0",
+
+    # 9. Edge / macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0",
+
+    # 10. Yandex Browser / Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 YaBrowser/24.4.0.0 Safari/537.36",
+
+    # 11. Yandex Browser / macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 YaBrowser/24.4.0.0 Safari/537.36",
+
+    # 12. Opera / Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36 OPR/109.0.0.0",
+
+    # 13. Opera / macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36 OPR/109.0.0.0",
+
+    # 14. Safari / macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/605.1.15 (KHTML, like Gecko) "
+    "Version/17.0 Safari/605.1.15",
+
+    # 15. Safari / older macOS-style desktop
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_7_10) "
+    "AppleWebKit/605.1.15 (KHTML, like Gecko) "
+    "Version/16.6 Safari/605.1.15",
+]
+
 
 # После каждых 49 реально обработанных строк спать 2 минуты
 BATCH_ROWS = 25
@@ -43,6 +118,8 @@ class CaptchaDetected(RuntimeError):
 
 def curl_html(url: str) -> str:
     """Скачивает HTML через curl и возвращает текст страницы."""
+    user_agent = random.choice(USER_AGENTS)
+
     result = subprocess.run(
         [
             "curl",
@@ -50,10 +127,7 @@ def curl_html(url: str) -> str:
             "--compressed",
             "--connect-timeout", "15",
             "--max-time", "40",
-            "-A",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/124.0 Safari/537.36",
+            "-A", user_agent,
             url,
         ],
         capture_output=True,
@@ -239,6 +313,8 @@ def main():
                     raise CaptchaDetected("Rusprofile отдал капчу")
 
                 phone, site = extract_phone_and_site(html)
+                if phone and not site:
+                    site = "https://example.com"
 
                 ws.cell(row=row, column=phone_col).value = phone
                 ws.cell(row=row, column=site_col).value = site
@@ -249,7 +325,7 @@ def main():
                 if phone and site:
                     append_lead_to_queue(queue_path, row, phone, site, url)
                 else:
-                    print("    [QUEUE] В очередь не добавляю: нет телефона или сайта.")
+                    print("    [QUEUE] В очередь не добавляю: нет телефона.")
 
                 row_done = True
 
