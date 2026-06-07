@@ -83,6 +83,12 @@ class TelegramSendRetryFailed(RuntimeError):
         self.original = original
 
 
+class RecipientNotResolved(RuntimeError):
+    def __init__(self, original: Exception) -> None:
+        super().__init__(str(original))
+        self.original = original
+
+
 @dataclass
 class AccountConfig:
     account: str
@@ -627,6 +633,8 @@ def describe_telegram_error(exc: Exception) -> str:
 def describe_error(exc: Exception) -> str:
     if isinstance(exc, TelegramSendRetryFailed):
         return describe_telegram_error(exc.original)
+    if isinstance(exc, RecipientNotResolved):
+        return f"Recipient cannot be resolved: {type(exc.original).__name__}: {exc.original}"
     if isinstance(exc, requests.RequestException):
         return f"HTTP request error: {type(exc).__name__}: {exc}"
     if isinstance(exc, RuntimeError) and "OpenRouter" in str(exc):
@@ -729,8 +737,8 @@ async def send_one(client: TelegramClient, lead: Lead, message: str) -> None:
                 await cleanup_imported_contact(client, imported_user)
 
     if last_exc is not None:
-        raise last_exc
-    raise RuntimeError("Queue row has no user_id/access_hash/username/phone to send to.")
+        raise RecipientNotResolved(last_exc)
+    raise RecipientNotResolved(RuntimeError("Queue row has no user_id/access_hash/username/phone to send to."))
 
 
 def resolve_clicker_script(script_arg: str = "") -> Path | None:
@@ -780,6 +788,8 @@ async def send_one_with_telegram_retry(client: TelegramClient, lead: Lead, messa
     try:
         await send_one(client, lead, message)
         return
+    except RecipientNotResolved:
+        raise
     except Exception as first_exc:
         print(f"[TG][ERROR] Ошибка отправки Telegram: {describe_telegram_error(first_exc)}")
 
@@ -794,6 +804,9 @@ async def send_one_with_telegram_retry(client: TelegramClient, lead: Lead, messa
         print("[TG][RETRY] Повторная попытка отправки того же сообщения тому же получателю.")
         await send_one(client, lead, message)
         print("[TG][RETRY] Повторная отправка прошла успешно, продолжаю очередь.")
+    except RecipientNotResolved as second_exc:
+        print(f"[TG][SKIP] Повторная попытка не смогла найти получателя: {describe_error(second_exc)}")
+        raise
     except Exception as second_exc:
         print(f"[TG][STOP] Повторная отправка тоже упала: {describe_telegram_error(second_exc)}")
         raise TelegramSendRetryFailed(second_exc) from second_exc
@@ -928,9 +941,14 @@ async def main() -> None:
                     await asyncio.sleep(args.delay)
             except Exception as exc:
                 errors_count += 1
-                logged_exc = exc.original if isinstance(exc, TelegramSendRetryFailed) else exc
+                logged_exc = exc.original if isinstance(exc, (TelegramSendRetryFailed, RecipientNotResolved)) else exc
                 append_error(errors_path, lead, logged_exc)
                 print(f"[ERROR] {describe_error(exc)}")
+
+                if isinstance(exc, RecipientNotResolved):
+                    skipped += 1
+                    print("[SKIP] Получателя не удалось найти ни одним способом. Иду дальше без start_clicker.sh.")
+                    continue
 
                 if isinstance(exc, TelegramSendRetryFailed):
                     print("[STOP] Повторная отправка после start_clicker.sh тоже не получилась. Завершаю скрипт.")

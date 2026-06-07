@@ -3,6 +3,7 @@
 Project folders:
 
 - `users-from-coments` - collect `user_id`, `access_hash`, `username` from comments under posts in `@portnyaginlive`.
+- `users-from-chat` - collect unique `user_id`, `access_hash`, `username` from people who wrote in a Telegram chat.
 - `users-from-rusprofile` - fill phone/site from Rusprofile Excel links and find Telegram users by phone.
 - `opros` - send Telegram messages to queued users and mark successful sends in `leads_queue_processed.txt`.
 
@@ -16,6 +17,7 @@ For example:
 users-from-coments/venv/bin/python users-from-rusprofile/phone_to_telegram_users.py --account search
 users-from-coments/venv/bin/python opros/send_queue.py --account sender
 users-from-coments/venv/bin/python users-from-coments/collect_comment_users.py --account comments
+users-from-coments/venv/bin/python users-from-chat/collect_chat_users.py --account chat --limit 20
 ```
 
 Environment variables use this pattern:
@@ -49,7 +51,7 @@ users-from-coments/venv
 Install all dependencies into it:
 
 ```bash
-users-from-coments/venv/bin/pip install -r users-from-rusprofile/requirements.txt -r opros/requirements.txt
+users-from-coments/venv/bin/pip install -r users-from-rusprofile/requirements.txt -r opros/requirements.txt -r users-from-chat/requirements.txt
 ```
 
 If Telegram login code does not arrive, choose QR login by typing:
