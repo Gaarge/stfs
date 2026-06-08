@@ -58,6 +58,95 @@ def load_env_files() -> list[Path]:
 LOADED_ENV_FILES = load_env_files()
 
 
+def error_classes(*names):
+    return tuple(cls for cls in (getattr(errors, name, None) for name in names) if cls)
+
+
+ACCESS_ERRORS = error_classes(
+    "ChannelPrivateError",
+    "ChatAdminRequiredError",
+    "UserBannedInChannelError",
+    "UserNotParticipantError",
+)
+CHAT_RESOLVE_ERRORS = error_classes(
+    "UsernameInvalidError",
+    "UsernameNotOccupiedError",
+    "PeerIdInvalidError",
+)
+AUTH_ERRORS = error_classes(
+    "AuthKeyInvalidError",
+    "AuthKeyUnregisteredError",
+    "PhoneNumberBannedError",
+    "UserDeactivatedBanError",
+    "UserDeactivatedError",
+)
+
+
+def describe_telegram_error(exc: Exception) -> str:
+    if isinstance(exc, getattr(errors, "FloodWaitError", ())):
+        return f"Telegram rate limit: нужно подождать {exc.seconds} секунд."
+    if isinstance(exc, ACCESS_ERRORS):
+        return "Нет доступа к чату: аккаунт не состоит в чате, забанен, чат приватный или нужна роль администратора."
+    if isinstance(exc, CHAT_RESOLVE_ERRORS):
+        return "Не удалось найти чат. Проверь ссылку/username и что аккаунт уже вступил в этот чат."
+    if isinstance(exc, AUTH_ERRORS):
+        return "Проблема с Telegram-сессией или аккаунтом: сессия недействительна, аккаунт забанен или деактивирован."
+    if isinstance(exc, getattr(errors, "RPCError", ())):
+        return f"Telegram RPC error: {type(exc).__name__}: {exc}"
+    if isinstance(exc, ValueError):
+        return f"Не удалось распознать чат или entity: {exc}"
+    return f"{type(exc).__name__}: {exc}"
+
+
+async def maybe_wait_flood(exc: Exception, max_flood_wait: int, action: str) -> bool:
+    seconds = int(getattr(exc, "seconds", 0) or 0)
+    print(f"[TG][FLOOD WAIT] Telegram ограничил действие: {action}. Нужно ждать {seconds} секунд.")
+
+    if max_flood_wait > 0 and seconds <= max_flood_wait:
+        print(f"[TG][WAIT] Жду {seconds} секунд и продолжу.")
+        await asyncio.sleep(seconds)
+        return True
+
+    print("[TG][STOP] Не жду автоматически. Можно увеличить --max-flood-wait, если хочешь ждать такие лимиты.")
+    return False
+
+
+async def resolve_chat(client: TelegramClient, chat_ref: str, max_flood_wait: int):
+    while True:
+        try:
+            chat = await client.get_entity(chat_ref)
+            title = getattr(chat, "title", None) or getattr(chat, "username", None) or chat_ref
+            print(f"[TG] Chat resolved: {title}")
+            return chat
+        except errors.FloodWaitError as exc:
+            if await maybe_wait_flood(exc, max_flood_wait, "открытие чата"):
+                continue
+            raise SystemExit(f"[TG][STOP] {describe_telegram_error(exc)}") from exc
+        except ACCESS_ERRORS as exc:
+            raise SystemExit(f"[TG][NO ACCESS] {describe_telegram_error(exc)}") from exc
+        except CHAT_RESOLVE_ERRORS as exc:
+            raise SystemExit(f"[TG][NOT FOUND] {describe_telegram_error(exc)}") from exc
+        except AUTH_ERRORS as exc:
+            raise SystemExit(f"[TG][AUTH] {describe_telegram_error(exc)}") from exc
+        except ValueError as exc:
+            raise SystemExit(f"[TG][NOT FOUND] {describe_telegram_error(exc)}") from exc
+        except errors.RPCError as exc:
+            raise SystemExit(f"[TG][ERROR] {describe_telegram_error(exc)}") from exc
+
+
+async def get_sender_safely(message, max_flood_wait: int):
+    while True:
+        try:
+            return await message.get_sender()
+        except errors.FloodWaitError as exc:
+            if await maybe_wait_flood(exc, max_flood_wait, "получение автора сообщения"):
+                continue
+            raise
+        except errors.RPCError as exc:
+            print(f"[TG][WARN] Не смог получить автора сообщения #{message.id}: {describe_telegram_error(exc)}")
+            return None
+
+
 @dataclass
 class AccountConfig:
     account: str
@@ -242,34 +331,57 @@ def add_user(seen_users: dict[int, dict], seen_usernames: set[str], sender: type
     return True
 
 
-async def collect_users(client: TelegramClient, chat, cutoff: datetime, limit: int | None, include_bots: bool) -> tuple[list[dict], int]:
+async def collect_users(
+    client: TelegramClient,
+    chat,
+    cutoff: datetime,
+    limit: int | None,
+    include_bots: bool,
+    max_flood_wait: int,
+) -> tuple[list[dict], int]:
     seen_users: dict[int, dict] = {}
     seen_usernames: set[str] = set()
     messages_seen = 0
+    offset_id = 0
 
-    async for message in client.iter_messages(chat):
-        messages_seen += 1
-        message_date = as_utc(message.date)
-        if message_date and message_date < cutoff:
-            print(f"[STOP] Reached message older than cutoff: {message_date.isoformat()}")
-            break
+    while True:
+        try:
+            async for message in client.iter_messages(chat, offset_id=offset_id):
+                messages_seen += 1
+                offset_id = message.id
+                message_date = as_utc(message.date)
+                if message_date and message_date < cutoff:
+                    print(f"[STOP] Reached message older than cutoff: {message_date.isoformat()}")
+                    rows = sorted(seen_users.values(), key=lambda row: row["message_date"], reverse=True)
+                    return rows, messages_seen
 
-        sender = await message.get_sender()
-        if not isinstance(sender, types.User):
-            continue
-        if sender.bot and not include_bots:
-            continue
+                sender = await get_sender_safely(message, max_flood_wait)
+                if not isinstance(sender, types.User):
+                    continue
+                if sender.bot and not include_bots:
+                    continue
 
-        added = add_user(seen_users, seen_usernames, sender, message)
-        if added and len(seen_users) % 25 == 0:
-            print(f"[PROGRESS] Messages checked: {messages_seen}; unique users: {len(seen_users)}")
+                added = add_user(seen_users, seen_usernames, sender, message)
+                if added and len(seen_users) % 25 == 0:
+                    print(f"[PROGRESS] Messages checked: {messages_seen}; unique users: {len(seen_users)}")
 
-        if limit is not None and len(seen_users) >= limit:
-            print(f"[STOP] Limit reached: {limit}")
-            break
+                if limit is not None and len(seen_users) >= limit:
+                    print(f"[STOP] Limit reached: {limit}")
+                    rows = sorted(seen_users.values(), key=lambda row: row["message_date"], reverse=True)
+                    return rows, messages_seen
 
-    rows = sorted(seen_users.values(), key=lambda row: row["message_date"], reverse=True)
-    return rows, messages_seen
+            rows = sorted(seen_users.values(), key=lambda row: row["message_date"], reverse=True)
+            return rows, messages_seen
+        except errors.FloodWaitError as exc:
+            if await maybe_wait_flood(exc, max_flood_wait, "чтение истории чата"):
+                continue
+            raise SystemExit(f"[TG][STOP] {describe_telegram_error(exc)}") from exc
+        except ACCESS_ERRORS as exc:
+            raise SystemExit(f"[TG][NO ACCESS] {describe_telegram_error(exc)}") from exc
+        except AUTH_ERRORS as exc:
+            raise SystemExit(f"[TG][AUTH] {describe_telegram_error(exc)}") from exc
+        except errors.RPCError as exc:
+            raise SystemExit(f"[TG][ERROR] {describe_telegram_error(exc)}") from exc
 
 
 def write_csv(path: Path, rows: list[dict]) -> None:
@@ -298,6 +410,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--limit", type=int, default=None, help="Stop after N unique users. Example: --limit 20")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT), help="Output CSV path.")
     parser.add_argument("--include-bots", action="store_true", help="Include bot accounts.")
+    parser.add_argument("--max-flood-wait", type=int, default=0, help="Wait and continue if Telegram FloodWait is at most N seconds. Default: 0 means stop immediately.")
     return parser
 
 
@@ -314,12 +427,20 @@ async def main() -> None:
     print(f"Login phone from env: {account.phone or '-'}")
     print(f"Cutoff: {cutoff.isoformat()}")
     print(f"Limit: {args.limit or '-'}")
+    print(f"Max FloodWait auto-wait: {args.max_flood_wait}s")
 
     await client.connect()
     try:
         await ensure_authorized(client, account)
-        chat = await client.get_entity(args.chat)
-        rows, messages_seen = await collect_users(client, chat, cutoff, args.limit, args.include_bots)
+        chat = await resolve_chat(client, args.chat, args.max_flood_wait)
+        rows, messages_seen = await collect_users(
+            client,
+            chat,
+            cutoff,
+            args.limit,
+            args.include_bots,
+            args.max_flood_wait,
+        )
     finally:
         await client.disconnect()
 

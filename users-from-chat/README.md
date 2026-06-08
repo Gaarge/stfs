@@ -49,6 +49,27 @@ Change the time window:
 venv/bin/python users-from-chat/collect_chat_users.py --account chat --months 3
 ```
 
+
+## Telegram Limits And Access
+
+The script prints clear stop reasons for common Telegram restrictions:
+
+- `FloodWaitError` - Telegram asks this account to wait before reading more.
+- `ChannelPrivateError` / `UserNotParticipantError` - the account cannot access the chat or has not joined it.
+- `ChatAdminRequiredError` - Telegram requires stronger permissions for this action.
+- `UserBannedInChannelError` - the account is banned/restricted in the chat.
+- invalid or missing chat username/link.
+
+By default the script stops on `FloodWaitError` and prints how many seconds Telegram asked to wait.
+
+To let it wait automatically only for small limits, pass seconds:
+
+```bash
+venv/bin/python users-from-chat/collect_chat_users.py --account chat --limit 20 --max-flood-wait 300
+```
+
+This means: if Telegram asks to wait 300 seconds or less, the script waits and continues; if Telegram asks for more, it stops.
+
 ## Account Selection
 
 For `--account chat`, variables are read in this order:
