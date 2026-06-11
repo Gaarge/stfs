@@ -4,7 +4,7 @@ Top-level services:
 
 - `users-from-coments` - collect `user_id`, `access_hash`, `username` from comments under posts in `@portnyaginlive`.
 - `users-from-chat` - collect unique `user_id`, `access_hash`, `username` from people who wrote in a Telegram chat.
-- `users-from-rusprofile` - fill phone/site from Rusprofile Excel links and find Telegram users by phone.
+- `users-from-rusprofile` - fill phone/site/email from Rusprofile Excel links and find Telegram users by phone.
 - `opros` - generate OpenRouter messages and send them to queued Telegram users.
 
 Shared files:
@@ -87,6 +87,18 @@ Fill Rusprofile phone/site data:
 
 ```bash
 venv/bin/python users-from-rusprofile/fill_contacts_from_rusprofile.py
+```
+
+Convert saved Rusprofile search HTML to Excel:
+
+```bash
+venv/bin/python users-from-rusprofile/rusprofile_search_txt_to_excel.py
+```
+
+Fill Rusprofile email queue from `/id/...` links:
+
+```bash
+venv/bin/python users-from-rusprofile/fill_emails_from_rusprofile_ids.py
 ```
 
 Find Telegram users by phone:

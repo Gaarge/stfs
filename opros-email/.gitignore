@@ -1,0 +1,6 @@
+__pycache__/
+email_users_processed.jsonl
+send_errors.jsonl
+message.txt
+gmail_credentials.json
+gmail_token.json

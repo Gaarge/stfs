@@ -4,13 +4,27 @@ This folder generates a personal OpenRouter message for each lead and sends it i
 
 Files:
 
-- `leads_queue.txt` - queue file.
-- `leads_queue_processed.txt` - successfully sent leads.
+- `../users-from-chat/telegram_chat_users.csv` - default queue file with users collected from chat messages.
+- `chat_users_processed.jsonl` - successfully sent chat users.
+- `leads_queue.txt` - old queue file, still usable through `--queue`.
+- `leads_queue_processed.txt` - old successfully sent leads file, still usable through `--processed`.
 - `message.txt` - optional static message text for `--use-static-message`.
 - `send_errors.jsonl` - created automatically for failed sends.
 - `/home/garg/openAI/sessions/sender_dev_all_sites.session` - sender Telegram session.
 
 ## Queue Formats
+
+By default, the script reads:
+
+```text
+/home/garg/openAI/users-from-chat/telegram_chat_users.csv
+```
+
+This CSV must contain columns such as:
+
+```text
+user_id,access_hash,username,first_name,last_name,is_bot,message_id,message_date
+```
 
 The queue may contain JSONL:
 
@@ -27,6 +41,7 @@ Or simple CSV-like lines:
 
 If a queue row has a phone, duplicate checks use the phone only.
 If it has no phone, duplicate checks use `user_id`, `access_hash`, or `username`.
+For chat users, the processed file is `chat_users_processed.jsonl`, so every successful send is saved there and skipped on future runs.
 
 ## Run
 
@@ -44,6 +59,8 @@ Then run:
 ```bash
 venv/bin/python opros/send_queue.py --account sender --yes
 ```
+
+This sends to users from `users-from-chat/telegram_chat_users.csv` and marks sent users in `opros/chat_users_processed.jsonl`.
 
 Safe test:
 
@@ -71,6 +88,12 @@ Static-message fallback:
 
 ```bash
 venv/bin/python opros/send_queue.py --account sender --use-static-message --yes
+```
+
+Run the old `leads_queue.txt` queue if needed:
+
+```bash
+venv/bin/python opros/send_queue.py --account sender --queue opros/leads_queue.txt --processed opros/leads_queue_processed.txt --yes
 ```
 
 ## Account Selection

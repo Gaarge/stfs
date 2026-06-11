@@ -38,8 +38,8 @@ except ImportError as exc:
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DEFAULT_QUEUE = BASE_DIR / "leads_queue.txt"
-DEFAULT_PROCESSED = BASE_DIR / "leads_queue_processed.txt"
+DEFAULT_QUEUE = BASE_DIR.parent / "users-from-chat" / "telegram_chat_users.csv"
+DEFAULT_PROCESSED = BASE_DIR / "chat_users_processed.jsonl"
 DEFAULT_MESSAGE_FILE = BASE_DIR / "message.txt"
 DEFAULT_ERRORS_FILE = BASE_DIR / "send_errors.jsonl"
 DEFAULT_API_ID = "34825825"
@@ -436,15 +436,32 @@ def build_openrouter_message(lead: "Lead", max_site_chars: int, model: str) -> s
 
 
 def parse_json_lead(data: dict, line_no: int, raw: str) -> Lead:
+    return parse_mapping_lead(data, line_no, raw)
+
+
+def field_value(data: dict, *names: str) -> str:
+    normalized = {
+        normalize_cell(key).lower(): value
+        for key, value in data.items()
+        if normalize_cell(key)
+    }
+    for name in names:
+        value = normalized.get(name.lower())
+        if value is not None:
+            return normalize_cell(value)
+    return ""
+
+
+def parse_mapping_lead(data: dict, line_no: int, raw: str) -> Lead:
     return Lead(
         line_no=line_no,
         raw=raw,
-        user_id=safe_int(data.get("user_id") or data.get("telegram_user_id")),
-        access_hash=safe_int(data.get("access_hash") or data.get("telegram_access_hash")),
-        username=normalize_username(data.get("username") or data.get("telegram_username") or ""),
-        phone=normalize_phone(data.get("phone") or data.get("telephone") or ""),
-        site=normalize_cell(data.get("site")),
-        excel_row=safe_int(data.get("excel_row")),
+        user_id=safe_int(field_value(data, "user_id", "telegram_user_id", "telegram_id", "id")),
+        access_hash=safe_int(field_value(data, "access_hash", "telegram_access_hash")),
+        username=normalize_username(field_value(data, "username", "telegram_username")),
+        phone=normalize_phone(field_value(data, "phone", "telephone", "tel")),
+        site=normalize_cell(field_value(data, "site", "website", "url")),
+        excel_row=safe_int(field_value(data, "excel_row", "row")),
     )
 
 
@@ -496,10 +513,56 @@ def parse_queue_line(line: str, line_no: int) -> Lead | None:
     return parse_csv_lead(parts, line_no, raw)
 
 
+def row_looks_like_csv_header(row: list[str]) -> bool:
+    names = {normalize_cell(value).lower() for value in row}
+    return bool(
+        names
+        & {
+            "user_id",
+            "telegram_user_id",
+            "telegram_id",
+            "access_hash",
+            "telegram_access_hash",
+            "username",
+            "telegram_username",
+        }
+    )
+
+
+def queue_has_csv_header(path: Path) -> bool:
+    with path.open("r", encoding="utf-8-sig", newline="") as f:
+        for row in csv.reader(f):
+            if not row:
+                continue
+            first_cell = normalize_cell(row[0])
+            if not first_cell or first_cell.startswith("#"):
+                continue
+            return row_looks_like_csv_header(row)
+    return False
+
+
+def read_header_csv_queue(path: Path) -> list[Lead]:
+    leads = []
+    with path.open("r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row is None or not any(normalize_cell(value) for value in row.values()):
+                continue
+            raw = json.dumps(row, ensure_ascii=False)
+            lead = parse_mapping_lead(row, reader.line_num, raw)
+            if lead:
+                leads.append(lead)
+    return leads
+
+
 def read_queue(path: Path) -> list[Lead]:
     if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
         return []
+
+    if queue_has_csv_header(path):
+        return read_header_csv_queue(path)
 
     leads = []
     with path.open("r", encoding="utf-8") as f:
