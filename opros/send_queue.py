@@ -1,18 +1,28 @@
+#!/usr/bin/env python3
+"""Send a prepared Telegram message to recipients claimed from the registry.
+
+The registry is the only source of recipients.  It atomically marks a record
+as used before returning it, so two running clients cannot receive the same
+Telegram account.
+"""
+
+from __future__ import annotations
+
 import argparse
 import asyncio
-import csv
+import hashlib
 import json
+import math
 import os
-import random
 import re
-import shutil
 import subprocess
-import sys
-import time
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from getpass import getpass
 from pathlib import Path
+from typing import Any
 
 try:
     from dotenv import load_dotenv
@@ -20,76 +30,47 @@ except ImportError:
     load_dotenv = None
 
 try:
-    from telethon import TelegramClient, errors, functions, types
+    from telethon import TelegramClient, errors, types
 except ImportError as exc:
     raise SystemExit(
-        "Missing dependency. Install requirements first:\n"
-        "  python -m pip install -r requirements.txt"
-    ) from exc
-
-try:
-    import requests
-    from bs4 import BeautifulSoup
-except ImportError as exc:
-    raise SystemExit(
-        "Missing dependency. Install requirements first:\n"
-        "  python -m pip install -r requirements.txt"
+        "Install dependencies first: python -m pip install telethon python-dotenv"
     ) from exc
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DEFAULT_QUEUE = BASE_DIR.parent / "users-from-chat" / "telegram_chat_users.csv"
-DEFAULT_PROCESSED = BASE_DIR / "chat_users_processed.jsonl"
 DEFAULT_MESSAGE_FILE = BASE_DIR / "message.txt"
-DEFAULT_ERRORS_FILE = BASE_DIR / "send_errors.jsonl"
+DEFAULT_CLAIMS_FILE = BASE_DIR / "registry_claims.jsonl"
+DEFAULT_SENT_FILE = BASE_DIR / "registry_sent.jsonl"
+DEFAULT_ERRORS_FILE = BASE_DIR / "registry_send_errors.jsonl"
+DEFAULT_RECOVERY_FILE = BASE_DIR / "telegram_recovery.jsonl"
+DEFAULT_REGISTRY_URL = "https://lbam.tech/username-registry"
+DEFAULT_VIDEO_FILE = Path("/home/garg/Загрузки/промо_итог.mp4")
+DEFAULT_VIDEO_THUMBNAIL = BASE_DIR.parent / "prev.jpg"
+VIDEO_CACHE_DIR = BASE_DIR / "media-cache"
+PROMO_TEMPLATE_CACHE_DIR = VIDEO_CACHE_DIR / "promo-templates"
 DEFAULT_API_ID = "34825825"
 DEFAULT_API_HASH = "60176f7ad0bcd77e63d4a64ca8d50a38"
-DEFAULT_OPENROUTER_MODEL = "google/gemini-3-flash-preview"
-DEFAULT_TELEGRAM_RETRY_SLEEP_SECONDS = 4 * 60
+MAX_VIDEO_CAPTION_LENGTH = 1024
+SAME_RECIPIENT_RETRY_WAIT_SECONDS = 2
+NEXT_RECIPIENT_COOLDOWN_SECONDS = 120
+MAX_UNRECOVERED_FAILURE_CYCLES = 2
+SENDER_NAME_PATTERN = re.compile(r"^sender([1-9][0-9]*)$", re.IGNORECASE)
 
 
-def load_env_files() -> list[Path]:
-    if not load_dotenv:
-        return []
-
-    candidates = [
-        BASE_DIR / ".env",
-        BASE_DIR.parent / ".env",
-        BASE_DIR.parent.parent / ".env",
-        Path.cwd() / ".env",
-    ]
-    loaded = []
-    seen = set()
-
-    for path in candidates:
-        resolved = path.resolve()
-        if resolved in seen:
-            continue
-        seen.add(resolved)
-        if resolved.exists() and load_dotenv(resolved, override=False):
-            loaded.append(resolved)
-
-    return loaded
+class RegistryRequestError(RuntimeError):
+    """A response from the recipient registry could not be used."""
 
 
-LOADED_ENV_FILES = load_env_files()
+class SendStageError(RuntimeError):
+    """A Telegram operation failed after identifying whether text or video failed."""
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-
-
-class TelegramSendRetryFailed(RuntimeError):
-    def __init__(self, original: Exception) -> None:
-        super().__init__(str(original))
+    def __init__(self, stage: str, original: Exception) -> None:
+        self.stage = stage
         self.original = original
+        super().__init__(f"{stage}: {type(original).__name__}: {original}")
 
 
-class RecipientNotResolved(RuntimeError):
-    def __init__(self, original: Exception) -> None:
-        super().__init__(str(original))
-        self.original = original
-
-
-@dataclass
+@dataclass(frozen=True)
 class AccountConfig:
     account: str
     api_id: int
@@ -98,943 +79,879 @@ class AccountConfig:
     session_path: Path
 
 
-@dataclass
+@dataclass(frozen=True)
 class Lead:
-    line_no: int
-    raw: str
-    user_id: int | None = None
-    access_hash: int | None = None
-    username: str = ""
-    phone: str = ""
-    site: str = ""
-    excel_row: int | None = None
+    username: str | None
+    user_id: int
+    access_hash: int
+    chat: str
 
 
-def normalize_account_name(account: str) -> str:
-    cleaned = re.sub(r"[^A-Za-z0-9_]+", "_", account.strip())
-    return cleaned or "default"
+@dataclass(frozen=True)
+class PromoVideo:
+    path: Path
+    duration_seconds: int
+    width: int
+    height: int
+    thumbnail: Path
 
 
-def env_for_account(account: str, key: str) -> str:
-    prefix = normalize_account_name(account).upper()
-    candidates = [
-        f"TG_{prefix}_{key}",
-        f"TELEGRAM_{prefix}_{key}",
-    ]
-    if account.lower() in {"sender", "search", "comments"}:
-        candidates.extend(
-            [
-                f"TELEGRAM_{account.upper()}_{key}",
-                f"TG_{account.upper()}_{key}",
-            ]
-        )
-    candidates.extend([f"TG_{key}", f"TELEGRAM_{key}"])
-    for name in candidates:
-        value = os.getenv(name)
+@dataclass(frozen=True)
+class PromoTemplate:
+    """Existing Telegram media uploaded once by one sending account."""
+
+    media: Any
+    message_id: int
+    fingerprint: str
+
+
+@dataclass
+class WorkerResult:
+    account: str
+    sent: int = 0
+    permanently_failed: int = 0
+    recovered: int = 0
+    claimed: int = 0
+    exhausted: bool = False
+    disabled: bool = False
+    registry_error: str | None = None
+
+
+def load_env_files() -> list[Path]:
+    """Load the closest useful .env files without overwriting shell variables."""
+    if load_dotenv is None:
+        return []
+
+    loaded: list[Path] = []
+    for candidate in (BASE_DIR / ".env", BASE_DIR.parent / ".env", Path.cwd() / ".env"):
+        candidate = candidate.resolve()
+        if candidate.exists() and candidate not in loaded:
+            load_dotenv(candidate, override=False)
+            loaded.append(candidate)
+    return loaded
+
+
+LOADED_ENV_FILES = load_env_files()
+
+
+def normalize_account_name(value: str) -> str:
+    normalized = re.sub(r"[^A-Za-z0-9]+", "_", value.strip()).strip("_").upper()
+    return normalized or "SENDER"
+
+
+def account_env(account: str, name: str) -> str | None:
+    prefix = normalize_account_name(account)
+    candidates = (
+        f"TG_{prefix}_{name}",
+        f"TELEGRAM_{prefix}_{name}",
+        f"TG_{name}",
+        f"TELEGRAM_{name}",
+    )
+    for candidate in candidates:
+        value = os.getenv(candidate)
         if value:
-            return value
-    return ""
+            return value.strip()
+    return None
 
 
 def resolve_account(account: str) -> AccountConfig:
-    api_id_raw = env_for_account(account, "API_ID") or DEFAULT_API_ID
-    api_hash = env_for_account(account, "API_HASH") or DEFAULT_API_HASH
-    phone = env_for_account(account, "PHONE")
-    session = env_for_account(account, "SESSION") or env_for_account(account, "SESSION_NAME")
+    api_id_raw = account_env(account, "API_ID") or DEFAULT_API_ID
+    api_hash = account_env(account, "API_HASH") or DEFAULT_API_HASH
+    phone = account_env(account, "PHONE") or ""
+    session_raw = account_env(account, "SESSION")
+    session_path = (
+        Path(session_raw).expanduser()
+        if session_raw
+        else BASE_DIR / "sessions" / account
+    )
+    session_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
         api_id = int(api_id_raw)
     except ValueError as exc:
-        raise SystemExit("Telegram API_ID must be a number.") from exc
+        raise SystemExit("TG_API_ID must be an integer.") from exc
 
-    if session:
-        session_path = Path(session)
-        if not session_path.is_absolute():
-            session_path = BASE_DIR / session_path
-    else:
-        session_path = BASE_DIR / "sessions" / f"{normalize_account_name(account)}.session"
-
-    session_path.parent.mkdir(parents=True, exist_ok=True)
+    if not api_hash:
+        raise SystemExit("TG_API_HASH is not configured.")
     return AccountConfig(account, api_id, api_hash, phone, session_path)
 
 
-def print_terminal_qr(url: str) -> None:
-    qrencode = shutil.which("qrencode")
-    if qrencode:
-        subprocess.run([qrencode, "-t", "ANSIUTF8", url], check=False)
-        return
-    print("QR generator is not installed. Open this link from an already logged-in Telegram app:")
-    print(url)
-
-
 async def login_with_qr(client: TelegramClient) -> None:
-    print("Starting QR login.")
-    print("Open Telegram: Settings -> Devices -> Link Desktop Device.")
     qr_login = await client.qr_login()
-    print_terminal_qr(qr_login.url)
+    print("\nScan this QR code in Telegram (Settings → Devices → Link Desktop Device):\n")
     try:
-        user = await qr_login.wait(timeout=120)
-    except asyncio.TimeoutError as exc:
-        raise SystemExit("QR login timed out.") from exc
+        subprocess.run(
+            ["qrencode", "-t", "ANSIUTF8", "-m", "1", "-o", "-", qr_login.url],
+            check=True,
+        )
+    except FileNotFoundError:
+        print("qrencode is not installed; use the Telegram link below instead.")
+    except subprocess.CalledProcessError:
+        print("Could not render a terminal QR code; use the Telegram link below instead.")
+    print("\nTelegram login link (backup):")
+    print(qr_login.url)
+    print("Waiting up to 2 minutes for confirmation…")
+    try:
+        await qr_login.wait(timeout=120)
     except errors.SessionPasswordNeededError:
-        password = getpass("Enter Telegram 2FA password: ")
+        password = getpass("Telegram two-factor password: ")
         await client.sign_in(password=password)
-        user = await client.get_me()
-    print(f"Logged in as @{user.username or user.id}")
+    except asyncio.TimeoutError as exc:
+        raise SystemExit("QR login timed out. Run the command again for a new QR link.") from exc
 
 
-async def ensure_authorized(client: TelegramClient, account: AccountConfig) -> None:
+async def ensure_authorized(client: TelegramClient, config: AccountConfig) -> None:
     if await client.is_user_authorized():
         me = await client.get_me()
-        print(f"[TG] Account '{account.account}' authorized as @{me.username or me.id}")
+        print(f"Telegram authorized as {getattr(me, 'username', None) or getattr(me, 'id', 'account')}.")
         return
 
-    method = input("Type 'qr' for QR login, or press Enter for phone-code login: ").strip().lower()
-    if method == "qr":
+    method = input("Telegram login method ([q]r / [p]hone): ").strip().lower() or "q"
+    if method.startswith("q"):
         await login_with_qr(client)
         return
 
-    if not account.phone:
-        account.phone = input(f"Enter Telegram phone for account '{account.account}' (+79991234567): ").strip()
-    if not account.phone:
-        raise SystemExit("Telegram phone is empty.")
-
+    phone = config.phone or input("Telegram phone number in international format: ").strip()
+    if not phone:
+        raise SystemExit("A phone number is required for phone login.")
+    sent = await client.send_code_request(phone)
+    code = input("Telegram login code: ").strip()
     try:
-        sent = await client.send_code_request(account.phone)
-    except errors.PhoneNumberBannedError as exc:
-        raise SystemExit("Telegram says this phone number is banned.") from exc
-    except errors.PhoneNumberInvalidError as exc:
-        raise SystemExit("Telegram says this phone number is invalid.") from exc
-    except errors.FloodWaitError as exc:
-        raise SystemExit(f"Telegram rate-limited login. Wait {exc.seconds} seconds.") from exc
-
-    print(f"Code requested. Delivery type: {type(sent.type).__name__}")
-    code = input("Enter Telegram login code: ").strip().replace(" ", "")
-    try:
-        await client.sign_in(phone=account.phone, code=code, phone_code_hash=sent.phone_code_hash)
+        await client.sign_in(phone=phone, code=code, phone_code_hash=sent.phone_code_hash)
     except errors.SessionPasswordNeededError:
-        password = getpass("Enter Telegram 2FA password: ")
+        password = getpass("Telegram two-factor password: ")
         await client.sign_in(password=password)
 
 
-def normalize_cell(value) -> str:
-    if value is None:
-        return ""
-    return str(value).strip()
-
-
-def normalize_username(value: str) -> str:
-    username = normalize_cell(value)
-    return username[1:] if username.startswith("@") else username
-
-
-def safe_int(value) -> int | None:
-    value = normalize_cell(value).replace("'", "")
-    if not value:
-        return None
-    try:
-        return int(value)
-    except ValueError:
-        return None
-
-
-def normalize_phone(value: str) -> str:
-    phone = normalize_cell(value)
-    if not phone:
-        return ""
-    digits = re.sub(r"\D", "", phone)
-    if not digits:
-        return ""
-    if len(digits) == 11 and digits.startswith("8"):
-        return "+7" + digits[1:]
-    if len(digits) == 11 and digits.startswith("7"):
-        return "+" + digits
-    if len(digits) == 10:
-        return "+7" + digits
-    if phone.startswith("+"):
-        return "+" + digits
-    return "+" + digits
-
-
-def normalize_url(raw_url: str) -> str:
-    url = normalize_cell(raw_url)
-    if not url:
-        return ""
-    if not re.match(r"^https?://", url, flags=re.IGNORECASE):
-        url = "https://" + url
-    return url
-
-
-def looks_like_phone(value: str) -> bool:
-    return bool(re.fullmatch(r"\+?\d[\d\s\-()]{8,20}", normalize_cell(value)))
-
-
-def fetch_site_text(url: str, max_chars: int = 8000) -> str:
-    normalized_url = normalize_url(url)
-    if not normalized_url:
-        return ""
-
-    headers = {
-        "User-Agent": "Mozilla/5.0 (compatible; SiteAnalyzer/1.0)",
-    }
-
-    print(f"[SITE] Загружаю сайт: {normalized_url}")
-    response = requests.get(normalized_url, headers=headers, timeout=15)
-    response.raise_for_status()
-    print(f"[SITE] HTTP статус: {response.status_code}")
-    print(f"[SITE] Content-Type: {response.headers.get('Content-Type', 'не указан')}")
-
-    if response.apparent_encoding:
-        response.encoding = response.apparent_encoding
-
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    for tag in soup(["script", "style", "noscript", "svg"]):
-        tag.decompose()
-
-    title = soup.title.string.strip() if soup.title and soup.title.string else ""
-
-    meta_description = ""
-    meta = soup.find("meta", attrs={"name": "description"})
-    if meta and meta.get("content"):
-        meta_description = meta["content"].strip()
-
-    text = soup.get_text(separator=" ")
-    text = re.sub(r"\s+", " ", text).strip()
-
-    result = f"""
-URL: {normalized_url}
-Title: {title}
-Meta description: {meta_description}
-Page text: {text}
-""".strip()
-
-    print(f"[SITE] Title: {title!r}")
-    print(f"[SITE] Meta description: {meta_description!r}")
-    print(f"[SITE] Длина очищенного текста до обрезки: {len(result)} символов")
-    print(f"[SITE] В нейросеть уйдёт максимум: {max_chars} символов")
-
-    return result[:max_chars]
-
-
-def generate_pitch(site_text: str = "", model: str = DEFAULT_OPENROUTER_MODEL) -> str:
-    prompt = f"""
-Ты пишешь короткое рекламное сообщение потенциальному клиенту от веб-разработчика.
-
-Ситуация:
-
-* Мы не знаем точно, есть ли у клиента сайт.
-* Сообщение должно одинаково хорошо подходить и тем, у кого сайта пока нет, и тем, у кого сайт уже есть.
-* Не пиши фразы вроде: "я нашёл ваш сайт", "увидел ваш сайт", "наткнулся на ваш сайт", "у вас нет сайта", "ваш сайт плохой".
-* Не утверждай то, чего мы точно не знаем.
-* Можно использовать нейтральную формулировку: "если сайта пока нет — можно сделать его с нуля, если сайт уже есть — можно обновить его и доработать".
-
-Стиль:
-
-* Пиши просто, по-человечески.
-* Без пафоса.
-* Без слов: "статусный", "экспертиза", "упаковать", "презентабельный", "визуальная форма", "достойный", "серьезные клиенты".
-* Не используй канцелярит.
-* Не пиши слишком вежливо и корпоративно.
-* Тон: прямой, уверенный, спокойный.
-* Максимум 6-7 предложений.
-* Ни слова не говори про цену.
-* Обязательно поздоровайся.
-* Прощаться не надо.
-
-Что нужно сказать:
-
-1. Меня зовут Владислав.
-2. Я уже несколько лет разрабатываю сайты.
-3. Также занимаюсь SEO-анализом — то есть слежу за тем, чтобы сайт могли увидеть как можно больше целевых клиентов.
-4. Скажи, что я могу сделать сайт с нуля или обновить уже существующий.
-5. Сайт должен быть красивым, понятным, современным и удобным для людей.
-6. Хороший сайт помогает бизнесу выглядеть понятнее, вызывает больше доверия и помогает получать больше заявок.
-7. Напиши уверенно, но честно: "сайт будет сделан так, чтобы он чаще попадал на первые страницы поиска".
-8. Объясни, что чем чаще сайт появляется на первых страницах поиска, тем больше людей его видят, а значит у бизнеса может быть больше клиентов.
-9. Упомяни, что я разрабатывал сайты для учебных заведений, адвокатских контор и интернет-магазинов.
-10. Напиши, что если нужно, могу прислать свои работы.
-11. Напиши, что работаю по договору.
-12. Не дави на человека и не пугай его потерей клиентов.
-
-Данные о бизнесе клиента, если они есть, чтобы аккуратно подстроить сообщение под сферу:
-{site_text}
-
-Выдай только готовое сообщение клиенту, без пояснений.
-""".strip()
-
-    if not OPENROUTER_API_KEY:
-        raise RuntimeError(
-            "Не найден OPENROUTER_API_KEY. Добавь его в .env или экспортируй переменную окружения."
-        )
-
-    print("[AI] Отправляю запрос в OpenRouter.")
-    print(f"[AI] Модель: {model}")
-    print(f"[AI] Длина промта: {len(prompt)} символов")
-
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://example.com",
-            "X-Title": "Site Pitch Generator",
-        },
-        json={
-            "model": model,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-            "temperature": 0.7,
-            "max_tokens": 300,
-        },
-        timeout=60,
-    )
-
-    print(f"[AI] HTTP статус OpenRouter: {response.status_code}")
-
-    if response.status_code != 200:
-        raise RuntimeError(f"OpenRouter error {response.status_code}: {response.text}")
-
-    data = response.json()
-    message = data["choices"][0]["message"]["content"].strip()
-    print(f"[AI] Ответ получен. Длина сообщения: {len(message)} символов")
-    return message
-
-
-def build_site_fallback_text(lead: "Lead") -> str:
-    return f"""
-URL: {normalize_url(lead.site)}
-Title:
-Meta description:
-Page text: Информации со страницы мало. Напиши сообщение в общем стиле: сайт выглядит слабым, его можно сделать понятнее, современнее и лучше подготовить под поиск.
-""".strip()
-
-
-def build_openrouter_message(lead: "Lead", max_site_chars: int, model: str) -> str:
-    site_text = ""
-
-    if lead.site:
-        try:
-            site_text = fetch_site_text(lead.site, max_chars=max_site_chars)
-            print("[OK] Сайт успешно загружен.")
-            print(f"[SITE] Длина текста сайта для нейросети: {len(site_text)} символов")
-        except requests.RequestException as exc:
-            print("[WARNING] Сайт не удалось загрузить, но лид НЕ будет пропущен.")
-            print(f"          Строка очереди: {lead.line_no}")
-            print(f"          Сайт: {lead.site}")
-            print(f"          Тип ошибки: {type(exc).__name__}")
-            print("          В нейросеть НЕ передаю текст ошибки, чтобы она не писала клиенту про недоступность сайта.")
-            site_text = build_site_fallback_text(lead)
-    else:
-        print("[SITE][WARN] В строке очереди нет сайта. Сгенерирую общее сообщение без данных о бизнесе.")
-
-    return generate_pitch(site_text, model=model)
-
-
-def parse_json_lead(data: dict, line_no: int, raw: str) -> Lead:
-    return parse_mapping_lead(data, line_no, raw)
-
-
-def field_value(data: dict, *names: str) -> str:
-    normalized = {
-        normalize_cell(key).lower(): value
-        for key, value in data.items()
-        if normalize_cell(key)
-    }
-    for name in names:
-        value = normalized.get(name.lower())
-        if value is not None:
-            return normalize_cell(value)
-    return ""
-
-
-def parse_mapping_lead(data: dict, line_no: int, raw: str) -> Lead:
-    return Lead(
-        line_no=line_no,
-        raw=raw,
-        user_id=safe_int(field_value(data, "user_id", "telegram_user_id", "telegram_id", "id")),
-        access_hash=safe_int(field_value(data, "access_hash", "telegram_access_hash")),
-        username=normalize_username(field_value(data, "username", "telegram_username")),
-        phone=normalize_phone(field_value(data, "phone", "telephone", "tel")),
-        site=normalize_cell(field_value(data, "site", "website", "url")),
-        excel_row=safe_int(field_value(data, "excel_row", "row")),
-    )
-
-
-def parse_csv_lead(parts: list[str], line_no: int, raw: str) -> Lead | None:
-    cleaned = [normalize_cell(part) for part in parts if normalize_cell(part)]
-    if len(cleaned) < 2:
-        return None
-
-    phone = ""
-    if cleaned and looks_like_phone(cleaned[-1]):
-        phone = normalize_phone(cleaned.pop())
-
-    user_id = safe_int(cleaned[0]) if cleaned else None
-    access_hash = safe_int(cleaned[1]) if len(cleaned) > 1 else None
-    username = normalize_username(cleaned[2]) if len(cleaned) > 2 else ""
-
-    return Lead(
-        line_no=line_no,
-        raw=raw,
-        user_id=user_id,
-        access_hash=access_hash,
-        username=username,
-        phone=phone,
-    )
-
-
-def parse_queue_line(line: str, line_no: int) -> Lead | None:
-    raw = line.strip()
-    if not raw or raw.startswith("#"):
-        return None
-
-    if raw.startswith("{"):
-        try:
-            return parse_json_lead(json.loads(raw), line_no, raw)
-        except json.JSONDecodeError:
-            print(f"[QUEUE][WARN] Bad JSON at line {line_no}, skipping.")
-            return None
-
-    try:
-        parts = next(csv.reader([raw]))
-    except csv.Error:
-        parts = []
-    if len(parts) <= 1:
-        if "|" in raw:
-            parts = raw.split("|")
-        elif ";" in raw:
-            parts = raw.split(";")
-
-    return parse_csv_lead(parts, line_no, raw)
-
-
-def row_looks_like_csv_header(row: list[str]) -> bool:
-    names = {normalize_cell(value).lower() for value in row}
-    return bool(
-        names
-        & {
-            "user_id",
-            "telegram_user_id",
-            "telegram_id",
-            "access_hash",
-            "telegram_access_hash",
-            "username",
-            "telegram_username",
-        }
-    )
-
-
-def queue_has_csv_header(path: Path) -> bool:
-    with path.open("r", encoding="utf-8-sig", newline="") as f:
-        for row in csv.reader(f):
-            if not row:
-                continue
-            first_cell = normalize_cell(row[0])
-            if not first_cell or first_cell.startswith("#"):
-                continue
-            return row_looks_like_csv_header(row)
-    return False
-
-
-def read_header_csv_queue(path: Path) -> list[Lead]:
-    leads = []
-    with path.open("r", encoding="utf-8-sig", newline="") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            if row is None or not any(normalize_cell(value) for value in row.values()):
-                continue
-            raw = json.dumps(row, ensure_ascii=False)
-            lead = parse_mapping_lead(row, reader.line_num, raw)
-            if lead:
-                leads.append(lead)
-    return leads
-
-
-def read_queue(path: Path) -> list[Lead]:
+def load_message(path: Path) -> str:
+    path = path.expanduser().resolve()
     if not path.exists():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
-        return []
-
-    if queue_has_csv_header(path):
-        return read_header_csv_queue(path)
-
-    leads = []
-    with path.open("r", encoding="utf-8") as f:
-        for line_no, line in enumerate(f, start=1):
-            lead = parse_queue_line(line, line_no)
-            if lead:
-                leads.append(lead)
-    return leads
-
-
-def lead_processed_keys(lead: Lead) -> set[str]:
-    if lead.phone:
-        return {f"phone:{lead.phone}"}
-
-    keys = set()
-    if lead.user_id:
-        keys.add(f"user_id:{lead.user_id}")
-    if lead.access_hash:
-        keys.add(f"access_hash:{lead.access_hash}")
-    if lead.username:
-        keys.add(f"username:{lead.username.lower()}")
-    return keys
-
-
-def processed_keys_from_line(line: str) -> set[str]:
-    line = line.strip()
-    if not line:
-        return set()
-
-    keys = {line}
-    if line.startswith("{"):
-        try:
-            lead = parse_json_lead(json.loads(line), 0, line)
-        except json.JSONDecodeError:
-            return keys
-        keys.update(lead_processed_keys(lead))
-        return keys
-
-    parts = line.split("|")
-    if len(parts) >= 2 and looks_like_phone(parts[1]):
-        keys.add(f"phone:{normalize_phone(parts[1])}")
-
-    csv_lead = parse_queue_line(line, 0)
-    if csv_lead:
-        keys.update(lead_processed_keys(csv_lead))
-    return keys
-
-
-def load_processed_keys(path: Path) -> set[str]:
-    if not path.exists():
-        path.touch()
-        return set()
-
-    keys = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
-        keys.update(processed_keys_from_line(line))
-    return keys
-
-
-def append_processed(path: Path, lead: Lead, message: str) -> None:
-    record = {
-        "status": "sent",
-        "sent_at": datetime.now(timezone.utc).isoformat(),
-        "queue_line": lead.line_no,
-        "user_id": lead.user_id,
-        "access_hash": lead.access_hash,
-        "username": lead.username or None,
-        "phone": lead.phone or None,
-        "site": lead.site or None,
-        "excel_row": lead.excel_row,
-        "message_len": len(message),
-    }
-    with path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(record, ensure_ascii=False) + "\n")
-        f.flush()
-
-
-def append_error(path: Path, lead: Lead, exc: Exception) -> None:
-    record = {
-        "error_at": datetime.now(timezone.utc).isoformat(),
-        "queue_line": lead.line_no,
-        "user_id": lead.user_id,
-        "access_hash": lead.access_hash,
-        "username": lead.username or None,
-        "phone": lead.phone or None,
-        "site": lead.site or None,
-        "excel_row": lead.excel_row,
-        "error_type": type(exc).__name__,
-        "error": str(exc),
-    }
-    with path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(record, ensure_ascii=False) + "\n")
-        f.flush()
-
-
-def error_classes(*names):
-    return tuple(cls for cls in (getattr(errors, name, None) for name in names) if cls)
-
-
-CRITICAL_ERRORS = error_classes(
-    "FloodWaitError",
-    "PeerFloodError",
-    "PhoneNumberBannedError",
-    "UserDeactivatedBanError",
-    "UserDeactivatedError",
-    "AuthKeyInvalidError",
-    "AuthKeyUnregisteredError",
-)
-RECIPIENT_ERRORS = error_classes(
-    "UserPrivacyRestrictedError",
-    "UserIsBlockedError",
-    "InputUserDeactivatedError",
-    "UsernameInvalidError",
-    "UsernameNotOccupiedError",
-    "PeerIdInvalidError",
-)
-
-
-def describe_telegram_error(exc: Exception) -> str:
-    if isinstance(exc, getattr(errors, "FloodWaitError", ())):
-        return f"Telegram flood wait. Wait {exc.seconds} seconds."
-    if isinstance(exc, getattr(errors, "PeerFloodError", ())):
-        return "Telegram limited this account for too many outgoing actions."
-    if isinstance(exc, error_classes("PhoneNumberBannedError", "UserDeactivatedBanError", "UserDeactivatedError")):
-        return "Telegram account/phone looks banned or deactivated."
-    if isinstance(exc, RECIPIENT_ERRORS):
-        return "Recipient cannot be messaged or resolved."
-    return f"Telegram error: {type(exc).__name__}: {exc}"
-
-
-def describe_error(exc: Exception) -> str:
-    if isinstance(exc, TelegramSendRetryFailed):
-        return describe_telegram_error(exc.original)
-    if isinstance(exc, RecipientNotResolved):
-        return f"Recipient cannot be resolved: {type(exc.original).__name__}: {exc.original}"
-    if isinstance(exc, requests.RequestException):
-        return f"HTTP request error: {type(exc).__name__}: {exc}"
-    if isinstance(exc, RuntimeError) and "OpenRouter" in str(exc):
-        return str(exc)
-    return describe_telegram_error(exc)
-
-
-def load_static_message(args) -> str:
-    if args.message:
-        return args.message.strip()
-
-    message_path = Path(args.message_file)
-    if not message_path.exists():
-        message_path.touch()
-    message = message_path.read_text(encoding="utf-8").strip()
+    message = path.read_text(encoding="utf-8").strip()
     if not message:
-        raise SystemExit(f"Static message is empty. Fill {message_path} or pass --message.")
+        raise SystemExit(
+            f"Message is empty. Put the prepared text into {path}; no registry record was claimed."
+        )
+    if len(message) > MAX_VIDEO_CAPTION_LENGTH:
+        raise SystemExit(
+            f"Message has {len(message)} characters, but a Telegram video caption may contain at most "
+            f"{MAX_VIDEO_CAPTION_LENGTH}; no registry record was claimed."
+        )
     return message
 
 
-def is_recipient_resolution_error(exc: Exception) -> bool:
-    if isinstance(exc, RECIPIENT_ERRORS):
-        return True
-    return isinstance(exc, ValueError) and "entity" in str(exc).lower()
-
-
-async def try_send_to_peer(client: TelegramClient, label: str, peer, message: str) -> None:
-    print(f"[TG] Пробую отправить через {label}.")
-    await client.send_message(peer, message)
-    print(f"[TG] Отправлено через {label}.")
-
-
-async def import_user_by_phone(client: TelegramClient, phone: str):
-    if not phone:
-        return None
-
-    print(f"[TG] Пробую найти получателя с аккаунта-отправителя по телефону: {phone}")
-    contact = types.InputPhoneContact(
-        client_id=random.randrange(1, 10_000_000),
-        phone=phone,
-        first_name="Temporary",
-        last_name="Contact",
-    )
-    result = await client(functions.contacts.ImportContactsRequest([contact]))
-    if not result.users:
-        print("[TG] По телефону пользователь не найден или скрыт настройками приватности.")
-        return None
-    user = result.users[0]
-    print(f"[TG] Получатель найден по телефону: id={getattr(user, 'id', None)} username={getattr(user, 'username', None) or '-'}")
-    return user
-
-
-async def cleanup_imported_contact(client: TelegramClient, user) -> None:
+def load_video(path: Path, thumbnail_override: Path | None = None) -> PromoVideo:
+    path = path.expanduser().resolve()
+    if not path.is_file():
+        raise SystemExit(f"Promo video was not found: {path}; no registry record was claimed.")
+    if path.stat().st_size == 0:
+        raise SystemExit(f"Promo video is empty: {path}; no registry record was claimed.")
     try:
-        await client(functions.contacts.DeleteContactsRequest(id=[user]))
-        print("[TG] Временный контакт удалён.")
-    except Exception as exc:
-        print(f"[TG][WARN] Не удалось удалить временный контакт: {type(exc).__name__}: {exc}")
-
-
-async def send_one(client: TelegramClient, lead: Lead, message: str) -> None:
-    attempts = []
-    if lead.username:
-        attempts.append((f"username @{lead.username}", lead.username))
-    if lead.user_id and lead.access_hash:
-        attempts.append(
-            (
-                "user_id/access_hash из очереди",
-                types.InputPeerUser(user_id=int(lead.user_id), access_hash=int(lead.access_hash)),
-            )
+        probe = subprocess.run(
+            [
+                "ffprobe", "-v", "error", "-show_entries",
+                "stream=codec_type,width,height,duration:format=duration",
+                "-of", "json", str(path),
+            ],
+            check=True,
+            text=True,
+            capture_output=True,
         )
-    if lead.user_id:
-        attempts.append(("user_id из очереди", int(lead.user_id)))
+        details = json.loads(probe.stdout)
+    except FileNotFoundError as exc:
+        raise SystemExit("ffprobe is required to prepare the Telegram video preview.") from exc
+    except (subprocess.CalledProcessError, json.JSONDecodeError) as exc:
+        raise SystemExit(f"Could not read video metadata from {path}; no registry record was claimed.") from exc
 
-    last_exc: Exception | None = None
-    for label, peer in attempts:
+    stream = next((item for item in details.get("streams", []) if item.get("codec_type") == "video"), None)
+    if not stream:
+        raise SystemExit(f"Promo file has no video stream: {path}; no registry record was claimed.")
+    try:
+        width = int(stream["width"])
+        height = int(stream["height"])
+        duration = float(details.get("format", {}).get("duration") or stream.get("duration"))
+    except (KeyError, TypeError, ValueError) as exc:
+        raise SystemExit(f"Promo video metadata is incomplete: {path}; no registry record was claimed.") from exc
+    if width < 1 or height < 1 or not math.isfinite(duration) or duration <= 0:
+        raise SystemExit(f"Promo video metadata is invalid: {path}; no registry record was claimed.")
+
+    if thumbnail_override is not None:
+        thumbnail = thumbnail_override.expanduser().resolve()
+        if not thumbnail.is_file() or thumbnail.stat().st_size == 0:
+            raise SystemExit(f"Video thumbnail was not found or is empty: {thumbnail}; no registry record was claimed.")
+        return PromoVideo(path, math.ceil(duration), width, height, thumbnail)
+
+    fingerprint = hashlib.sha256(
+        f"{path}:{path.stat().st_size}:{path.stat().st_mtime_ns}".encode("utf-8")
+    ).hexdigest()[:16]
+    thumbnail = VIDEO_CACHE_DIR / f"{path.stem}-{fingerprint}.jpg"
+    if not thumbnail.is_file() or thumbnail.stat().st_size == 0:
+        VIDEO_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        timestamp = min(3.0, duration / 2)
         try:
-            await try_send_to_peer(client, label, peer, message)
-            return
-        except Exception as exc:
-            if not is_recipient_resolution_error(exc):
-                raise
-            last_exc = exc
-            print(f"[TG][WARN] Не получилось через {label}: {type(exc).__name__}: {exc}")
+            thumbnail_result = subprocess.run(
+                [
+                    "ffmpeg", "-hide_banner", "-loglevel", "error", "-n", "-ss", f"{timestamp:.3f}",
+                    "-i", str(path), "-frames:v", "1", "-vf", "scale=640:-2", "-q:v", "3", str(thumbnail),
+                ],
+                check=False,
+                text=True,
+                capture_output=True,
+            )
+        except FileNotFoundError as exc:
+            raise SystemExit("ffmpeg is required to create the Telegram video preview.") from exc
+        if thumbnail_result.returncode and (not thumbnail.is_file() or thumbnail.stat().st_size == 0):
+            raise SystemExit(f"Could not create video preview: {thumbnail_result.stderr.strip()}")
+    return PromoVideo(path, math.ceil(duration), width, height, thumbnail)
 
-    imported_user = None
-    if lead.phone:
+
+def registry_request(registry_url: str, api_key: str, size: int) -> dict[str, Any]:
+    url = registry_url.rstrip("/") + "/v1/claim-next"
+    body = json.dumps({"n": size}).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=body,
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-API-Key": api_key,
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
         try:
-            imported_user = await import_user_by_phone(client, lead.phone)
-            if imported_user:
-                await try_send_to_peer(client, "телефон, импортированный этим аккаунтом", imported_user, message)
-                return
-        except Exception as exc:
-            if not is_recipient_resolution_error(exc):
-                raise
-            last_exc = exc
-            print(f"[TG][WARN] Не получилось через телефон: {type(exc).__name__}: {exc}")
-        finally:
-            if imported_user is not None:
-                await cleanup_imported_contact(client, imported_user)
+            detail = exc.read().decode("utf-8")
+        except OSError:
+            detail = ""
+        raise RegistryRequestError(f"Registry returned HTTP {exc.code}: {detail}") from exc
+    except urllib.error.URLError as exc:
+        raise RegistryRequestError(f"Cannot reach registry: {exc.reason}") from exc
+    except json.JSONDecodeError as exc:
+        raise RegistryRequestError("Registry returned invalid JSON.") from exc
 
-    if last_exc is not None:
-        raise RecipientNotResolved(last_exc)
-    raise RecipientNotResolved(RuntimeError("Queue row has no user_id/access_hash/username/phone to send to."))
+    if not isinstance(payload, dict) or not isinstance(payload.get("items"), list):
+        raise RegistryRequestError("Registry response has an unexpected format.")
+    return payload
 
 
-def resolve_clicker_script(script_arg: str = "") -> Path | None:
-    candidates = []
-    if script_arg:
-        candidates.append(Path(script_arg))
-    candidates.extend(
-        [
-            BASE_DIR / "start_clicker.sh",
-            BASE_DIR.parent / "start_clicker.sh",
-            BASE_DIR.parent.parent / "start_clicker.sh",
-            BASE_DIR.parent.parent / "pipline" / "start_clicker.sh",
-            Path.cwd() / "start_clicker.sh",
-            Path.cwd() / "pipline" / "start_clicker.sh",
-        ]
+def parse_lead(record: dict[str, Any]) -> Lead:
+    try:
+        username_raw = record.get("username")
+        username = str(username_raw).strip() if username_raw is not None else None
+        username = username or None
+        return Lead(
+            username=username,
+            user_id=int(record["user_id"]),
+            access_hash=int(record["access_hash"]),
+            chat=str(record.get("chat") or ""),
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RegistryRequestError(f"Registry returned a malformed recipient: {record!r}") from exc
+
+
+def append_jsonl(path: Path, payload: dict[str, Any]) -> None:
+    path = path.expanduser().resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def file_digest(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        while chunk := handle.read(1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def promo_template_fingerprint(video: PromoVideo) -> str:
+    """Change the template whenever either the MP4 or its supplied cover changes."""
+    return hashlib.sha256(
+        f"video:{file_digest(video.path)}|thumbnail:{file_digest(video.thumbnail)}".encode("utf-8")
+    ).hexdigest()
+
+
+def promo_template_cache_path(config: AccountConfig) -> Path:
+    return PROMO_TEMPLATE_CACHE_DIR / f"{config.account.casefold()}.json"
+
+
+def read_template_message_id(cache_path: Path, fingerprint: str) -> int | None:
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+        if payload.get("fingerprint") != fingerprint:
+            return None
+        message_id = int(payload["message_id"])
+    except (OSError, TypeError, ValueError, KeyError, json.JSONDecodeError):
+        return None
+    return message_id if message_id > 0 else None
+
+
+def write_template_message_id(cache_path: Path, config: AccountConfig, fingerprint: str, message_id: int) -> None:
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = cache_path.with_suffix(".tmp")
+    temporary_path.write_text(
+        json.dumps(
+            {
+                "account": config.account,
+                "fingerprint": fingerprint,
+                "message_id": message_id,
+                "uploaded_at": utc_now(),
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        ) + "\n",
+        encoding="utf-8",
+    )
+    temporary_path.replace(cache_path)
+
+
+async def upload_video(client: TelegramClient, peer: Any, video: PromoVideo, caption: str) -> Any:
+    """Upload the MP4 once, with its metadata and permanent cover."""
+    attributes = [
+        types.DocumentAttributeVideo(
+            duration=video.duration_seconds,
+            w=video.width,
+            h=video.height,
+            supports_streaming=True,
+        )
+    ]
+    return await client.send_file(
+        peer,
+        video.path,
+        attributes=attributes,
+        thumb=video.thumbnail,
+        caption=caption,
+        mime_type="video/mp4",
+        force_document=False,
+        supports_streaming=True,
     )
 
-    seen = set()
-    for path in candidates:
-        resolved = path.resolve()
-        if resolved in seen:
-            continue
-        seen.add(resolved)
-        if resolved.exists():
-            return resolved
-    return None
+
+async def prepare_promo_template(
+    client: TelegramClient,
+    config: AccountConfig,
+    video: PromoVideo,
+    cache_path: Path | None = None,
+) -> PromoTemplate:
+    """Return this account's reusable Telegram video, uploading only when needed."""
+    fingerprint = promo_template_fingerprint(video)
+    cache_path = cache_path or promo_template_cache_path(config)
+    cached_message_id = read_template_message_id(cache_path, fingerprint)
+    if cached_message_id is not None:
+        try:
+            cached_message = await client.get_messages("me", ids=cached_message_id)
+            if cached_message and getattr(cached_message, "media", None):
+                print(f"[{config.account}] Reusing cached Telegram promo video (Saved Messages #{cached_message_id}).")
+                return PromoTemplate(cached_message.media, cached_message_id, fingerprint)
+        except Exception as exc:
+            print(f"[{config.account}] Cached promo video is unavailable, uploading it again: {exception_text(exc)}")
+
+    print(f"[{config.account}] Uploading promo video once to Saved Messages; later sends will reuse it.")
+    uploaded_message = await upload_video(client, "me", video, "")
+    media = getattr(uploaded_message, "media", None)
+    message_id = getattr(uploaded_message, "id", None)
+    if not media or not isinstance(message_id, int) or message_id <= 0:
+        raise RuntimeError("Telegram did not return media after uploading the promo template to Saved Messages.")
+    write_template_message_id(cache_path, config, fingerprint, message_id)
+    print(f"[{config.account}] Promo video cached in Saved Messages (#{message_id}).")
+    return PromoTemplate(media, message_id, fingerprint)
 
 
-def run_clicker_script(script_arg: str = "") -> None:
-    script_path = resolve_clicker_script(script_arg)
-    if script_path is None:
-        print("[TG][WARN] start_clicker.sh не найден. Пауза и повторная попытка всё равно будут выполнены.")
-        return
+async def send_template_video(client: TelegramClient, peer: Any, template: PromoTemplate, caption: str) -> None:
+    """Send existing Telegram media without uploading the local MP4 again."""
+    await client.send_file(
+        peer,
+        template.media,
+        caption=caption,
+        force_document=False,
+        supports_streaming=True,
+    )
 
-    print(f"[TG][SCRIPT] Запускаю: {script_path}")
+
+async def send_one(client: TelegramClient, lead: Lead, message: str, template: PromoTemplate) -> None:
+    """Send one video message with the prepared text as its caption."""
+    peer: Any = types.InputPeerUser(lead.user_id, lead.access_hash)
     try:
-        completed = subprocess.run(["bash", str(script_path)], check=False)
+        await send_template_video(client, peer, template, message)
+    except (errors.PeerIdInvalidError, errors.InputUserDeactivatedError, ValueError) as exc:
+        if not lead.username:
+            raise SendStageError("video_with_caption", exc) from exc
+        peer = lead.username
+        try:
+            await send_template_video(client, peer, template, message)
+        except Exception as fallback_exc:
+            raise SendStageError("video_with_caption", fallback_exc) from fallback_exc
     except Exception as exc:
-        print(f"[TG][WARN] Не удалось запустить start_clicker.sh: {type(exc).__name__}: {exc}")
-        return
-
-    if completed.returncode != 0:
-        print(f"[TG][WARN] start_clicker.sh завершился с кодом {completed.returncode}.")
+        raise SendStageError("video_with_caption", exc) from exc
 
 
-async def send_one_with_telegram_retry(client: TelegramClient, lead: Lead, message: str, args) -> None:
+async def send_test_recipient(client: TelegramClient, username: str, message: str, template: PromoTemplate) -> None:
+    """Send only to an explicit test username; never contacts the registry."""
+    peer = username
     try:
-        await send_one(client, lead, message)
-        return
-    except RecipientNotResolved:
-        raise
-    except Exception as first_exc:
-        print(f"[TG][ERROR] Ошибка отправки Telegram: {describe_telegram_error(first_exc)}")
+        await send_template_video(client, peer, template, message)
+    except Exception as exc:
+        raise SendStageError("video_with_caption", exc) from exc
 
-    run_clicker_script(args.clicker_script)
 
-    retry_sleep = args.telegram_retry_sleep
-    if retry_sleep > 0:
-        print(f"[TG][PAUSE] Жду {retry_sleep:.1f} секунд, потом повторю отправку этому же получателю.")
-        await asyncio.sleep(retry_sleep)
+def exception_text(exc: Exception) -> str:
+    if isinstance(exc, SendStageError):
+        return f"{exc.stage}: {exception_text(exc.original)}"
+    if isinstance(exc, errors.FloodWaitError):
+        return f"Flood wait: Telegram requires a pause of {exc.seconds} seconds."
+    if isinstance(exc, errors.PeerFloodError):
+        return "Peer flood: Telegram temporarily restricted new outgoing messages."
+    return f"{type(exc).__name__}: {exc}"
 
+
+def normalize_test_username(value: str) -> str:
+    username = value.strip()
+    if username.startswith("@"):
+        username = username[1:]
+    if not username or len(username) > 128 or any(character.isspace() for character in username):
+        raise SystemExit("--test-username must be one Telegram username, for example @example.")
+    return username
+
+
+def requested_account_names(args: argparse.Namespace) -> list[str]:
+    """Return unique senderN names, where N is any positive integer."""
+    names: list[str] = []
+    if args.account:
+        names.append(args.account.strip())
+    for value in args.accounts:
+        names.extend(part.strip() for part in value.split(","))
+    names = [name for name in names if name]
+    if not names:
+        raise SystemExit("Specify at least one Telegram account: --account sender1 or --accounts sender1,sender2.")
+
+    seen: set[str] = set()
+    unique: list[str] = []
+    for name in names:
+        match = SENDER_NAME_PATTERN.fullmatch(name)
+        if not match:
+            raise SystemExit(
+                f"Invalid Telegram account {name!r}. Name every sending account senderN, where N is a positive integer "
+                "(for example sender1)."
+            )
+        key = name.casefold()
+        if key in seen:
+            raise SystemExit(f"Telegram account {name!r} was listed more than once.")
+        seen.add(key)
+        unique.append(name)
+    return unique
+
+
+def send_error_payload(exc: Exception) -> tuple[str, str]:
+    stage = exc.stage if isinstance(exc, SendStageError) else "unknown"
+    return stage, exception_text(exc)
+
+
+async def notify_spam_bot(
+    config: AccountConfig,
+    client: TelegramClient,
+    record: dict[str, Any],
+    recovery_path: Path,
+) -> bool:
+    """Ask Telegram's SpamBot about the current account's restriction state."""
+    append_jsonl(
+        recovery_path,
+        {"at": utc_now(), "event": "spam_bot_start_requested", "account": config.account, "record": record},
+    )
     try:
-        print("[TG][RETRY] Повторная попытка отправки того же сообщения тому же получателю.")
-        await send_one(client, lead, message)
-        print("[TG][RETRY] Повторная отправка прошла успешно, продолжаю очередь.")
-    except RecipientNotResolved as second_exc:
-        print(f"[TG][SKIP] Повторная попытка не смогла найти получателя: {describe_error(second_exc)}")
-        raise
-    except Exception as second_exc:
-        print(f"[TG][STOP] Повторная отправка тоже упала: {describe_telegram_error(second_exc)}")
-        raise TelegramSendRetryFailed(second_exc) from second_exc
+        await client.send_message("SpamBot", "/start")
+    except Exception as exc:
+        append_jsonl(
+            recovery_path,
+            {
+                "at": utc_now(), "event": "spam_bot_start_failed", "account": config.account,
+                "record": record, "error": exception_text(exc),
+            },
+        )
+        print(f"[{config.account}] Could not send /start to @SpamBot: {exception_text(exc)}")
+        return False
+    append_jsonl(
+        recovery_path,
+        {"at": utc_now(), "event": "spam_bot_start_sent", "account": config.account, "record": record},
+    )
+    print(
+        f"[{config.account}] Sent /start to @SpamBot; retrying the same recipient "
+        f"in {SAME_RECIPIENT_RETRY_WAIT_SECONDS} seconds."
+    )
+    return True
+
+
+async def recover_after_telegram_error(
+    config: AccountConfig,
+    client: TelegramClient,
+    record: dict[str, Any],
+    lead: Lead,
+    message: str,
+    template: PromoTemplate,
+    consecutive_unrecovered_cycles: int,
+    sent_path: Path,
+    errors_path: Path,
+    recovery_path: Path,
+    retry_wait_seconds: float = SAME_RECIPIENT_RETRY_WAIT_SECONDS,
+    next_recipient_wait_seconds: float = NEXT_RECIPIENT_COOLDOWN_SECONDS,
+) -> tuple[bool, bool, int]:
+    """Contact SpamBot, retry in two seconds, then cool down before the next lead."""
+    cycle = consecutive_unrecovered_cycles + 1
+    spam_bot_succeeded = await notify_spam_bot(config, client, record, recovery_path)
+    if not spam_bot_succeeded:
+        disabled = cycle >= MAX_UNRECOVERED_FAILURE_CYCLES
+        if disabled:
+            append_jsonl(
+                recovery_path,
+                {
+                    "at": utc_now(), "event": "account_disabled", "account": config.account, "record": record,
+                    "reason": "two_unrecovered_spam_bot_start_failures", "cycles": cycle,
+                },
+            )
+            print(f"[{config.account}] Disabled after {cycle} unrecovered Telegram error cycles.")
+            return False, True, cycle
+        append_jsonl(
+            recovery_path,
+            {
+                "at": utc_now(), "event": "next_recipient_cooldown_started", "account": config.account,
+                "record": record, "cycle": cycle, "seconds": next_recipient_wait_seconds,
+                "reason": "spam_bot_start_failed",
+            },
+        )
+        await asyncio.sleep(next_recipient_wait_seconds)
+        return False, False, cycle
+
+    append_jsonl(
+        recovery_path,
+        {
+            "at": utc_now(), "event": "same_recipient_retry_wait_started", "account": config.account,
+            "record": record, "cycle": cycle, "seconds": retry_wait_seconds,
+        },
+    )
+    await asyncio.sleep(retry_wait_seconds)
+    try:
+        await send_one(client, lead, message, template)
+    except Exception as retry_exc:
+        stage, error = send_error_payload(retry_exc)
+        next_cycles = cycle
+        append_jsonl(
+            errors_path,
+            {
+                "at": utc_now(), "account": config.account, "record": record, "attempt": "retry",
+                "cycle": cycle, "stage": stage, "error": error,
+            },
+        )
+        append_jsonl(
+            recovery_path,
+            {
+                "at": utc_now(), "event": "retry_failed", "account": config.account, "record": record,
+                "cycle": cycle, "stage": stage, "error": error,
+            },
+        )
+        disabled = next_cycles >= MAX_UNRECOVERED_FAILURE_CYCLES
+        if disabled:
+            append_jsonl(
+                recovery_path,
+                {
+                    "at": utc_now(), "event": "account_disabled", "account": config.account, "record": record,
+                    "reason": "two_unrecovered_telegram_error_cycles", "cycles": next_cycles,
+                },
+            )
+            print(f"[{config.account}] Disabled after {next_cycles} unrecovered Telegram error cycles.")
+        else:
+            append_jsonl(
+                recovery_path,
+                {
+                    "at": utc_now(), "event": "next_recipient_cooldown_started", "account": config.account,
+                    "record": record, "cycle": cycle, "seconds": next_recipient_wait_seconds,
+                    "reason": "same_recipient_retry_failed",
+                },
+            )
+            print(
+                f"[{config.account}] Retry failed; this recipient was logged. "
+                f"Waiting {next_recipient_wait_seconds} seconds before the next registry record."
+            )
+            await asyncio.sleep(next_recipient_wait_seconds)
+        return False, disabled, next_cycles
+
+    append_jsonl(
+        sent_path,
+        {
+            "sent_at": utc_now(), "account": config.account, "record": record, "attempt": "retry",
+            "stages": ["video_with_caption"],
+        },
+    )
+    append_jsonl(
+        recovery_path,
+        {"at": utc_now(), "event": "retry_succeeded", "account": config.account, "record": record, "cycle": cycle},
+    )
+    print(f"[{config.account}] Retry succeeded for {lead.username or lead.user_id}.")
+    return True, False, 0
+
+
+async def run_account_worker(
+    config: AccountConfig,
+    client: TelegramClient,
+    registry_url: str,
+    api_key: str,
+    message: str,
+    template: PromoTemplate,
+    delay: float,
+    max_per_run: int | None,
+    claims_path: Path,
+    sent_path: Path,
+    errors_path: Path,
+    recovery_path: Path,
+) -> WorkerResult:
+    """Claim one record at a time and keep this account independent from others."""
+    result = WorkerResult(account=config.account)
+    unrecovered_cycles = 0
+    while max_per_run is None or result.claimed < max_per_run:
+        try:
+            payload = await asyncio.to_thread(registry_request, registry_url, api_key, 1)
+        except RegistryRequestError as exc:
+            result.registry_error = str(exc)
+            append_jsonl(
+                recovery_path,
+                {"at": utc_now(), "event": "registry_error", "account": config.account, "error": str(exc)},
+            )
+            print(f"[{config.account}] Registry error: {exc}")
+            return result
+
+        records = payload["items"]
+        if not records:
+            result.exhausted = True
+            append_jsonl(recovery_path, {"at": utc_now(), "event": "registry_exhausted", "account": config.account})
+            print(f"[{config.account}] The registry has no unused recipients left.")
+            return result
+
+        record = records[0]
+        try:
+            lead = parse_lead(record)
+        except RegistryRequestError as exc:
+            result.permanently_failed += 1
+            append_jsonl(
+                errors_path,
+                {"at": utc_now(), "account": config.account, "record": record, "attempt": "claim", "stage": "malformed_record", "error": str(exc)},
+            )
+            continue
+
+        result.claimed += 1
+        append_jsonl(
+            claims_path,
+            {"claimed_at": utc_now(), "account": config.account, "queue_index": result.claimed, "record": record},
+        )
+        try:
+            await send_one(client, lead, message, template)
+        except Exception as first_exc:
+            stage, error = send_error_payload(first_exc)
+            append_jsonl(
+                recovery_path,
+                {
+                    "at": utc_now(), "event": "first_send_failed", "account": config.account, "record": record,
+                    "cycle": unrecovered_cycles + 1, "stage": stage, "error": error,
+                },
+            )
+            print(f"[{config.account}] Telegram error for {lead.username or lead.user_id}: {error}")
+            sent, disabled, unrecovered_cycles = await recover_after_telegram_error(
+                config, client, record, lead, message, template, unrecovered_cycles,
+                sent_path, errors_path, recovery_path,
+            )
+            if sent:
+                result.sent += 1
+                result.recovered += 1
+            else:
+                result.permanently_failed += 1
+            if disabled:
+                result.disabled = True
+                return result
+            if not sent:
+                # The 120-second recovery cooldown has already completed.
+                # Claim the next VPS record immediately, without adding the
+                # normal between-send delay a second time.
+                continue
+        else:
+            # A normal successful send starts a fresh error sequence. A later
+            # Telegram error must not be treated as a continuation of an old,
+            # already recovered failure.
+            unrecovered_cycles = 0
+            result.sent += 1
+            append_jsonl(
+                sent_path,
+                {
+                    "sent_at": utc_now(), "account": config.account, "queue_index": result.claimed,
+                    "record": record, "attempt": "first", "stages": ["video_with_caption"],
+                },
+            )
+            print(f"[{config.account}][{result.claimed}] Sent to {lead.username or lead.user_id}.")
+
+        if delay and (max_per_run is None or result.claimed < max_per_run):
+            await asyncio.sleep(delay)
+    return result
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Generate OpenRouter messages and send them to Telegram leads from queue.")
-    parser.add_argument("--queue", default=str(DEFAULT_QUEUE), help="Queue file path.")
-    parser.add_argument("--processed", default=str(DEFAULT_PROCESSED), help="Processed state file.")
-    parser.add_argument("--errors", default=str(DEFAULT_ERRORS_FILE), help="Error log JSONL.")
-    parser.add_argument("--message-file", default=str(DEFAULT_MESSAGE_FILE), help="Static message text file for --use-static-message.")
-    parser.add_argument("--message", default="", help="Static message text from command line for --use-static-message.")
-    parser.add_argument("--use-static-message", action="store_true", help="Send --message or --message-file instead of generating through OpenRouter.")
-    parser.add_argument("--openrouter-model", default=os.getenv("OPENROUTER_MODEL", DEFAULT_OPENROUTER_MODEL), help="OpenRouter model.")
-    parser.add_argument("--max-site-chars", type=int, default=8000, help="Max site text chars to send to OpenRouter.")
-    parser.add_argument("--account", default="sender", help="Telegram account name. Example: sender, main.")
-    parser.add_argument("--delay", type=float, default=float(os.getenv("SEND_DELAY_SECONDS", "60")), help="Delay after successful send.")
-    parser.add_argument("--error-sleep", type=float, default=float(os.getenv("SEND_ERROR_SLEEP_SECONDS", "240")), help="Sleep after non-critical Telegram error.")
-    parser.add_argument("--telegram-retry-sleep", type=float, default=float(os.getenv("TELEGRAM_RETRY_SLEEP_SECONDS", str(DEFAULT_TELEGRAM_RETRY_SLEEP_SECONDS))), help="Sleep before retrying failed Telegram send.")
-    parser.add_argument("--clicker-script", default=os.getenv("START_CLICKER_SCRIPT", ""), help="Path to start_clicker.sh. Auto-detected if empty.")
-    parser.add_argument("--max-per-run", type=int, default=None, help="Max messages to send this run.")
-    parser.add_argument("--dry-run", action="store_true", help="Do not send and do not write processed file.")
-    parser.add_argument("--yes", action="store_true", help="Do not ask before each send.")
+    parser = argparse.ArgumentParser(
+        description="Claim recipients from username-registry and send one prepared Telegram message."
+    )
+    parser.add_argument(
+        "--registry-url",
+        default=os.getenv("REGISTRY_URL", DEFAULT_REGISTRY_URL),
+        help="Registry base URL (default: REGISTRY_URL or lbam.tech endpoint).",
+    )
+    parser.add_argument("--max-per-run", type=int, help="Optional safety cap of records per account; omit for continuous work until the registry is empty.")
+    parser.add_argument("--account", help="One account name in the senderN format, for example sender1.")
+    parser.add_argument(
+        "--accounts",
+        action="append",
+        default=[],
+        metavar="NAME[,NAME...]",
+        help="One or more senderN accounts; may be passed repeatedly. Example: --accounts sender1,sender2,sender3.",
+    )
+    parser.add_argument("--message-file", type=Path, default=DEFAULT_MESSAGE_FILE, help="Prepared message file.")
+    parser.add_argument(
+        "--video-file",
+        type=Path,
+        default=Path(os.getenv("PROMO_VIDEO_FILE", str(DEFAULT_VIDEO_FILE))),
+        help="MP4 sent as one message with the prepared text as caption.",
+    )
+    parser.add_argument(
+        "--video-thumbnail",
+        type=Path,
+        default=Path(os.getenv("PROMO_VIDEO_THUMBNAIL", str(DEFAULT_VIDEO_THUMBNAIL))),
+        help="JPG/PNG cover shown by Telegram before download (default: PROMO_VIDEO_THUMBNAIL or ../prev.jpg).",
+    )
+    parser.add_argument(
+        "--test-username",
+        metavar="USERNAME",
+        help="Send one video-with-caption message only to this username; does not claim a registry record or require REGISTRY_API_KEY.",
+    )
+    parser.add_argument("--claims-file", type=Path, default=DEFAULT_CLAIMS_FILE, help="Audit log for claimed records.")
+    parser.add_argument("--sent-file", type=Path, default=DEFAULT_SENT_FILE, help="Audit log for successful sends.")
+    parser.add_argument("--errors-file", type=Path, default=DEFAULT_ERRORS_FILE, help="Audit log for send errors.")
+    parser.add_argument("--recovery-file", type=Path, default=DEFAULT_RECOVERY_FILE, help="Detailed Telegram recovery log JSONL.")
+    parser.add_argument("--delay", type=float, default=float(os.getenv("SEND_DELAY_SECONDS", "60")), help="Pause in seconds between sends (default: 60).")
+    parser.add_argument("--yes", action="store_true", help="Send immediately after the claim; skip confirmation.")
+    parser.add_argument("--dry-run", action="store_true", help="Validate the message and configuration without claiming or sending.")
     return parser
 
 
-async def main() -> None:
-    args = build_parser().parse_args()
-    queue_path = Path(args.queue)
-    processed_path = Path(args.processed)
-    errors_path = Path(args.errors)
-    static_message = load_static_message(args) if args.use_static_message else None
+async def run(args: argparse.Namespace) -> int:
+    account_names = requested_account_names(args)
+    test_username = normalize_test_username(args.test_username) if args.test_username else None
+    if test_username and len(account_names) != 1:
+        raise SystemExit("--test-username requires exactly one Telegram account.")
+    if args.max_per_run is not None and args.max_per_run < 1:
+        raise SystemExit("--max-per-run must be positive.")
+    if args.delay < 0:
+        raise SystemExit("--delay cannot be negative.")
 
-    account = resolve_account(args.account)
-    client = TelegramClient(str(account.session_path.with_suffix("")), account.api_id, account.api_hash)
+    message = load_message(args.message_file)
+    video = load_video(args.video_file, args.video_thumbnail)
+    print(
+        f"Prepared message: {len(message)} characters. "
+        f"Video: {video.path} ({video.duration_seconds}s, {video.width}x{video.height}); "
+        f"preview: {video.thumbnail}."
+    )
+    print(f"Telegram accounts ({len(account_names)}): {', '.join(account_names)}.")
+    print("Mode: continuous one-by-one claims until the registry is empty or all selected accounts are disabled.")
+    if args.max_per_run is not None:
+        print(f"Safety cap: {args.max_per_run} claimed record(s) per account.")
+    if args.dry_run:
+        print("Dry run: no registry record was claimed and no Telegram video-with-caption was sent.")
+        return 0
 
-    leads = read_queue(queue_path)
-    processed_keys = load_processed_keys(processed_path)
-    if not args.use_static_message and not OPENROUTER_API_KEY:
-        raise SystemExit("OPENROUTER_API_KEY is empty. Add it to .env or pass --use-static-message.")
+    api_key = os.getenv("REGISTRY_API_KEY", "").strip()
+    if not test_username and not api_key:
+        raise SystemExit("REGISTRY_API_KEY is not set. Put it in the shell or a local .env file.")
 
-    print(f"Queue: {queue_path.resolve()}")
-    print(f"Processed: {processed_path.resolve()}")
-    print(f"Account: {account.account}")
-    print(f"Session: {account.session_path}")
-    print(f"Loaded .env files: {', '.join(str(path) for path in LOADED_ENV_FILES) or '-'}")
-    print(f"Login phone from env: {account.phone or '-'}")
-    print(f"Leads loaded: {len(leads)}")
-    print(f"Processed keys loaded: {len(processed_keys)}")
-    print(f"Dry-run: {'yes' if args.dry_run else 'no'}")
-    print(f"Message source: {'static message' if static_message is not None else 'OpenRouter'}")
-    if static_message is None:
-        print(f"OpenRouter model: {args.openrouter_model}")
-    print(f"Telegram retry sleep: {args.telegram_retry_sleep:.1f}s")
-    print(f"Clicker script: {resolve_clicker_script(args.clicker_script) or '-'}")
-
-    sent = 0
-    skipped = 0
-    errors_count = 0
-    processed_this_run = 0
-
-    client_connected = False
-    if not args.dry_run:
-        await client.connect()
-        client_connected = True
-        await ensure_authorized(client, account)
-    else:
-        print("[DRY-RUN] Telegram connection is skipped.")
-
+    configs = [resolve_account(account_name) for account_name in account_names]
+    clients: list[tuple[AccountConfig, TelegramClient]] = []
     try:
-        for lead in leads:
-            keys = lead_processed_keys(lead)
-            if not keys:
-                print(f"[{lead.line_no}] SKIP: no user_id/access_hash/username/phone keys.")
-                skipped += 1
-                continue
-            if not keys.isdisjoint(processed_keys):
-                print(f"[{lead.line_no}] SKIP: already processed by {', '.join(sorted(keys))}")
-                skipped += 1
-                continue
-            if args.max_per_run is not None and processed_this_run >= args.max_per_run:
-                print(f"Max per run reached: {args.max_per_run}")
-                break
+        for config in configs:
+            client = TelegramClient(str(config.session_path), config.api_id, config.api_hash)
+            await client.connect()
+            clients.append((config, client))
+            print(f"Authorizing Telegram account {config.account}…")
+            await ensure_authorized(client, config)
 
-            title = (
-                f"[{lead.line_no}] user_id={lead.user_id or '-'} "
-                f"access_hash={lead.access_hash or '-'} "
-                f"username={lead.username or '-'} "
-                f"phone={lead.phone or '-'} "
-                f"site={lead.site or '-'}"
-            )
-            print("\n" + title)
-
-            if static_message is None and not args.yes:
-                answer = input("Generate OpenRouter message? Type 'generate' to continue, anything else to skip: ").strip().lower()
-                if answer not in {"generate", "g", "yes", "y", "да", "send"}:
-                    print("Skipped before OpenRouter request.")
-                    skipped += 1
-                    continue
-
+        if test_username:
+            config, client = clients[0]
+            print(f"TEST MODE: registry is not contacted; one video-with-caption will be sent only to @{test_username}.")
+            if not args.yes:
+                confirmation = input(f"Send the prepared video with text caption only to @{test_username}? [y/N]: ").strip().lower()
+                if confirmation not in {"y", "yes", "д", "да"}:
+                    print("Cancelled. The registry was not contacted.")
+                    return 0
+            record = {"username": test_username, "source": "test_username"}
             try:
-                message = static_message or build_openrouter_message(
-                    lead,
-                    max_site_chars=args.max_site_chars,
-                    model=args.openrouter_model,
-                )
-                print("\n" + "#" * 90)
-                print("# MESSAGE")
-                print("#" * 90)
-                print(message)
-
-                if args.dry_run:
-                    print("[DRY-RUN] Would send message.")
-                    processed_this_run += 1
-                else:
-                    if not args.yes:
-                        answer = input("Send this message? Type 'send' to send, anything else to skip: ").strip().lower()
-                        if answer != "send":
-                            print("Skipped by user.")
-                            skipped += 1
-                            continue
-
-                    await send_one_with_telegram_retry(client, lead, message, args)
-                    append_processed(processed_path, lead, message)
-                    processed_keys.update(keys)
-                    sent += 1
-                    processed_this_run += 1
-                    print("Sent and marked as processed.")
-
-                if args.delay > 0 and not args.dry_run:
-                    print(f"Delay {args.delay:.1f}s...")
-                    await asyncio.sleep(args.delay)
+                template = await prepare_promo_template(client, config, video)
+                await send_test_recipient(client, test_username, message, template)
             except Exception as exc:
-                errors_count += 1
-                logged_exc = exc.original if isinstance(exc, (TelegramSendRetryFailed, RecipientNotResolved)) else exc
-                append_error(errors_path, lead, logged_exc)
-                print(f"[ERROR] {describe_error(exc)}")
+                stage = exc.stage if isinstance(exc, SendStageError) else "unknown"
+                append_jsonl(
+                    args.errors_file,
+                    {"at": utc_now(), "account": config.account, "test_mode": True, "record": record, "stage": stage, "error": exception_text(exc)},
+                )
+                print(f"[test][{config.account}] Failed for @{test_username}: {exception_text(exc)}")
+                return 1
+            append_jsonl(
+                args.sent_file,
+                {"sent_at": utc_now(), "account": config.account, "test_mode": True, "record": record, "stages": ["video_with_caption"]},
+            )
+            print(f"[test][{config.account}] Video with text caption sent to @{test_username}.")
+            return 0
 
-                if isinstance(exc, RecipientNotResolved):
-                    skipped += 1
-                    print("[SKIP] Получателя не удалось найти ни одним способом. Иду дальше без start_clicker.sh.")
-                    continue
+        if not args.yes:
+            confirmation = input("Start continuous sending? Each account will claim one record at a time. [y/N]: ").strip().lower()
+            if confirmation not in {"y", "yes", "д", "да"}:
+                print("Cancelled. The registry was not contacted.")
+                return 0
 
-                if isinstance(exc, TelegramSendRetryFailed):
-                    print("[STOP] Повторная отправка после start_clicker.sh тоже не получилась. Завершаю скрипт.")
-                    break
+        templates: list[tuple[AccountConfig, TelegramClient, PromoTemplate]] = []
+        for config, client in clients:
+            try:
+                template = await prepare_promo_template(client, config, video)
+            except Exception as exc:
+                print(f"[{config.account}] Could not prepare reusable promo video: {exception_text(exc)}")
+                return 1
+            templates.append((config, client, template))
 
-                if isinstance(exc, CRITICAL_ERRORS):
-                    if isinstance(exc, getattr(errors, "FloodWaitError", ())):
-                        print(f"[TG][STOP] FloodWait seconds: {exc.seconds}")
-                    print("[TG][STOP] Critical Telegram error. Increase delay or switch account.")
-                    break
-
-                if args.error_sleep > 0:
-                    print(f"Sleeping after error: {args.error_sleep:.1f}s")
-                    await asyncio.sleep(args.error_sleep)
+        results = await asyncio.gather(
+            *(
+                run_account_worker(
+                    config, client, args.registry_url, api_key, message, template, args.delay, args.max_per_run,
+                    args.claims_file, args.sent_file, args.errors_file, args.recovery_file,
+                )
+                for config, client, template in templates
+            )
+        )
+        sent = sum(result.sent for result in results)
+        failed = sum(result.permanently_failed for result in results)
+        recovered = sum(result.recovered for result in results)
+        claimed = sum(result.claimed for result in results)
+        per_account = "; ".join(
+            f"{result.account}: sent={result.sent}, recovered={result.recovered}, failed={result.permanently_failed}, "
+            f"claimed={result.claimed}, status={'disabled' if result.disabled else 'empty' if result.exhausted else 'registry_error' if result.registry_error else 'cap_reached'}"
+            for result in results
+        )
+        print(f"Finished. Sent: {sent}; recovered after retry: {recovered}; failed: {failed}; claimed: {claimed}.")
+        print(f"Per account: {per_account}")
+        return 1 if any(result.registry_error for result in results) or all(result.disabled for result in results) else 0
     finally:
-        if client_connected:
-            await client.disconnect()
+        await asyncio.gather(*(client.disconnect() for _, client in clients), return_exceptions=True)
 
-    print("\nDone.")
-    print(f"Sent: {sent}")
-    print(f"Skipped: {skipped}")
-    print(f"Errors: {errors_count}")
+
+def main() -> int:
+    return asyncio.run(run(build_parser().parse_args()))
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    raise SystemExit(main())
