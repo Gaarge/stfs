@@ -36,6 +36,16 @@ TG_SENDER3_SESSION=/path/to/sender3.session
 
 ## Commands
 
+### One-command launcher
+
+From the repository root, use the interactive launcher instead of remembering the full command:
+
+```bash
+./run_sender.sh
+```
+
+It works on Debian, Ubuntu, Arch and Nyarch. It installs only missing system packages (`python`, venv support and `ffmpeg`), creates `.venv` only if absent, installs missing Python packages, finds or asks for the MP4 path, and asks how many sender accounts to run. Entering `3` starts `sender1,sender2,sender3`. The normal Telegram authorization and final sending confirmation remain in place.
+
 From `/home/garg/opros` first validate the text, video and cover without connecting to Telegram or the registry:
 
 ```bash
