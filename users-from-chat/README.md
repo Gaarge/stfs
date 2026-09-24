@@ -8,6 +8,8 @@ Default chat:
 https://t.me/freelead
 ```
 
+If a private chat has no public link, pass its exact visible title with `--chat`, for example `--chat 'Заявочки 💅🏼'`. The authorized account must already have that chat in its dialog list; the script refuses to choose when several dialogs have the same title.
+
 The script logs in through a normal Telegram user account with Telethon, not a bot. It saves:
 
 - `user_id`
@@ -48,6 +50,42 @@ Change the time window:
 ```bash
 venv/bin/python users-from-chat/collect_chat_users.py --account chat --months 3
 ```
+
+## Save directly to the username registry
+
+The collector can also import the collected people directly into the protected registry at `https://lbam.tech/username-registry`. Every imported row is saved with `username`, `user_id`, `access_hash` and the chat label you provide. New rows start with `used = no`.
+
+Set the admin key only in the current terminal, then run the collector:
+
+```bash
+export REGISTRY_ADMIN_KEY='admin-key-from-the-server'
+venv/bin/python users-from-chat/collect_chat_users.py \
+  --account chat \
+  --chat 'https://t.me/teachersrooms' \
+  --months 6 \
+  --save-to-registry \
+  --registry-chat 'Учительской'
+```
+
+The CSV is still written locally as a backup. The collector imports only new records: people already saved from another chat stay unchanged and are reported as skipped. Rows without a public `username` are imported by their `user_id + access_hash`; those values are enough to write to them later. Only rows without `user_id` or `access_hash` are skipped.
+
+Do not share `REGISTRY_ADMIN_KEY`; regular users only need the separate client key.
+
+## Collect from a list of chats
+
+`collect_chat_list.py` reads all `https://t.me/...` links from a Markdown/text file, scans each available chat for recent authors, and imports only new Telegram accounts into the registry. The `chat` field receives the real Telegram title of each chat.
+
+The script never joins chats. Public chats with readable history can work without membership; private or unavailable chats are recorded as skipped in the summary and do not stop the remaining batch.
+
+```bash
+export REGISTRY_ADMIN_KEY='admin-key-from-the-server'
+venv/bin/python users-from-chat/collect_chat_list.py \
+  --account chat \
+  --list '/absolute/path/to/chats.md' \
+  --months 6
+```
+
+The summary contains counts and error reasons, not collected accounts. By default it is saved as `users-from-chat/telegram_chat_batch_summary.json`.
 
 
 ## Telegram Limits And Access

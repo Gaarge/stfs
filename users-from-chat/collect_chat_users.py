@@ -1,10 +1,13 @@
 import argparse
 import asyncio
 import csv
+import json
 import os
 import re
 import shutil
 import subprocess
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from getpass import getpass
@@ -29,6 +32,7 @@ DEFAULT_CHAT = os.getenv("TARGET_CHAT", "https://t.me/freelead")
 DEFAULT_OUTPUT = BASE_DIR / "telegram_chat_users.csv"
 DEFAULT_API_ID = "34825825"
 DEFAULT_API_HASH = "60176f7ad0bcd77e63d4a64ca8d50a38"
+DEFAULT_REGISTRY_URL = os.getenv("REGISTRY_URL", "https://lbam.tech/username-registry")
 
 
 def load_env_files() -> list[Path]:
@@ -129,6 +133,16 @@ async def resolve_chat(client: TelegramClient, chat_ref: str, max_flood_wait: in
         except AUTH_ERRORS as exc:
             raise SystemExit(f"[TG][AUTH] {describe_telegram_error(exc)}") from exc
         except ValueError as exc:
+            matches = []
+            target_title = chat_ref.strip().casefold()
+            async for dialog in client.iter_dialogs():
+                if (dialog.name or "").strip().casefold() == target_title:
+                    matches.append(dialog.entity)
+            if len(matches) == 1:
+                print(f"[TG] Chat resolved by dialog title: {chat_ref}")
+                return matches[0]
+            if len(matches) > 1:
+                raise SystemExit(f"[TG][NOT FOUND] Несколько диалогов имеют название {chat_ref!r}; укажи ссылку или ID.") from exc
             raise SystemExit(f"[TG][NOT FOUND] {describe_telegram_error(exc)}") from exc
         except errors.RPCError as exc:
             raise SystemExit(f"[TG][ERROR] {describe_telegram_error(exc)}") from exc
@@ -402,6 +416,54 @@ def write_csv(path: Path, rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
+def registry_records(rows: list[dict], chat_name: str) -> tuple[list[dict], int]:
+    records = []
+    skipped = 0
+    for row in rows:
+        username = normalize_username(row.get("username"))
+        user_id = str(row.get("user_id") or "").strip()
+        access_hash = str(row.get("access_hash") or "").strip()
+        if not user_id or not access_hash:
+            skipped += 1
+            continue
+        records.append(
+            {
+                "username": username or None,
+                "user_id": user_id,
+                "access_hash": access_hash,
+                "chat": chat_name,
+            }
+        )
+    return records, skipped
+
+
+def import_into_registry(rows: list[dict], registry_url: str, admin_key: str, chat_name: str) -> tuple[int, int, int]:
+    records, skipped = registry_records(rows, chat_name)
+    if not records:
+        raise SystemExit("[REGISTRY] Нет записей с username, user_id и access_hash для импорта.")
+
+    request = urllib.request.Request(
+        f"{registry_url.rstrip('/')}/v1/import",
+        data=json.dumps({"records": records, "ignore_existing": True}, ensure_ascii=False).encode("utf-8"),
+        headers={"Content-Type": "application/json", "X-Admin-Key": admin_key},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=90) as response:
+            result = json.loads(response.read())
+    except urllib.error.HTTPError as exc:
+        try:
+            details = json.loads(exc.read())
+            message = details.get("message", str(exc))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            message = str(exc)
+        raise SystemExit(f"[REGISTRY] Импорт отклонён ({exc.code}): {message}") from exc
+    except urllib.error.URLError as exc:
+        raise SystemExit(f"[REGISTRY] Не удалось подключиться к реестру: {exc.reason}") from exc
+
+    return int(result.get("imported", 0)), skipped, int(result.get("skipped_existing", 0))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Collect unique Telegram users who wrote in a chat.")
     parser.add_argument("--account", default="chat", help="Telegram account name. Example: chat, main.")
@@ -411,11 +473,20 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT), help="Output CSV path.")
     parser.add_argument("--include-bots", action="store_true", help="Include bot accounts.")
     parser.add_argument("--max-flood-wait", type=int, default=0, help="Wait and continue if Telegram FloodWait is at most N seconds. Default: 0 means stop immediately.")
+    parser.add_argument("--save-to-registry", action="store_true", help="Import collected Telegram users into the username registry.")
+    parser.add_argument("--registry-url", default=DEFAULT_REGISTRY_URL, help="Username registry base URL.")
+    parser.add_argument("--registry-chat", help="Value to save in the registry chat field. Required with --save-to-registry.")
     return parser
 
 
 async def main() -> None:
     args = build_parser().parse_args()
+    registry_admin_key = os.getenv("REGISTRY_ADMIN_KEY", "")
+    if args.save_to_registry:
+        if not args.registry_chat or not args.registry_chat.strip():
+            raise SystemExit("--registry-chat is required with --save-to-registry.")
+        if not registry_admin_key:
+            raise SystemExit("Set REGISTRY_ADMIN_KEY before using --save-to-registry.")
     account = resolve_account(args.account)
     client = TelegramClient(str(account.session_path.with_suffix("")), account.api_id, account.api_hash)
     cutoff = cutoff_from_months(args.months)
@@ -449,6 +520,9 @@ async def main() -> None:
 
     print(f"Finished. Messages checked: {messages_seen}; unique users saved: {len(rows)}")
     print(f"Saved to: {output_path.resolve()}")
+    if args.save_to_registry:
+        imported, skipped, existing = import_into_registry(rows, args.registry_url, registry_admin_key, args.registry_chat.strip())
+        print(f"[REGISTRY] Imported: {imported}; skipped existing: {existing}; skipped without user_id/access_hash: {skipped}")
 
 
 if __name__ == "__main__":

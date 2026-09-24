@@ -5,15 +5,15 @@ Top-level services:
 - `users-from-coments` - collect `user_id`, `access_hash`, `username` from comments under posts in `@portnyaginlive`.
 - `users-from-chat` - collect unique `user_id`, `access_hash`, `username` from people who wrote in a Telegram chat.
 - `users-from-rusprofile` - fill phone/site/email from Rusprofile Excel links and find Telegram users by phone.
-- `opros` - generate OpenRouter messages and send them to queued Telegram users.
+- `opros` - send the prepared promo video and text to recipients atomically issued by the username registry.
+- `username-registry` - защищённый SQLite API, который выдаёт каждый username только один раз; инструкция: [`username-registry/README.md`](username-registry/README.md).
 
 Shared files:
 
 - `.env` - one environment file for all services.
 - `requirements.txt` - all Python dependencies.
-- `venv/` - one shared virtualenv.
-- `sessions/` - centralized Telegram sessions with clear names.
-- `start_clicker.sh` - helper used by `opros` before Telegram retry.
+- `.venv/` - local virtualenv, created by `run_sender.sh` when absent.
+- `opros/sessions/` - local Telegram sessions; never commit these files.
 
 ## Setup
 
@@ -59,16 +59,16 @@ If a session is already authorized, the scripts will not ask for a phone number.
 
 ## Commands
 
-Send generated outreach messages:
+Start the Telegram sender:
 
 ```bash
-venv/bin/python opros/send_queue.py --account sender --yes --delay 120
+./run_sender.sh
 ```
 
-Safe send test:
+The launcher asks how many accounts to run (`sender1` through `senderN`) and installs missing dependencies on Debian, Ubuntu, Arch or Nyarch. For a safe validation without sending:
 
 ```bash
-venv/bin/python opros/send_queue.py --account sender --dry-run --max-per-run 1 --yes
+.venv/bin/python opros/send_queue.py --accounts sender1 --dry-run
 ```
 
 Collect first 20 unique users from `@freelead`:

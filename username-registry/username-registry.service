@@ -1,0 +1,21 @@
+[Unit]
+Description=Username registry API
+After=network.target
+
+[Service]
+Type=simple
+User=username-registry
+Group=username-registry
+WorkingDirectory=/opt/username-registry
+EnvironmentFile=/etc/username-registry.env
+ExecStart=/usr/bin/python3 /opt/username-registry/server.py
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/username-registry
+
+[Install]
+WantedBy=multi-user.target
